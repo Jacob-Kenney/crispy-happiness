@@ -1,0 +1,17 @@
+[Unit]
+Description=Docker Engine
+Wants=containerd.service
+After=network.target containerd.service
+
+[Service]
+Type=notify
+Environment=PATH=/opt/docker-engine:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/opt/docker-engine/dockerd --config-file=/etc/docker/daemon.json
+Restart=on-failure
+RestartSec=3
+Delegate=yes
+KillMode=process
+TimeoutStartSec=35
+
+[Install]
+WantedBy=multi-user.target

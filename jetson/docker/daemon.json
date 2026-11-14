@@ -1,0 +1,12 @@
+{
+  "bridge": "none",
+  "iptables": false,
+  "ip6tables": false,
+  "ip-forward": false,
+  "ip-masq": false,
+  "userland-proxy": false,
+  "default-runtime": "wendy-crun",
+  "runtimes": {
+    "wendy-crun": {"path": "/opt/docker-engine/wendy-crun"}
+  }
+}

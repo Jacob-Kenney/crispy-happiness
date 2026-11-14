@@ -1,0 +1,12 @@
+{
+  "appId": "lfm3-omni",
+  "platform": "linux",
+  "version": "1.0.0",
+  "env": {
+    "LLAMA_CACHE": "/models",
+    "LLAMA_API_KEY": "${LFM3_API_KEY}"
+  },
+  "entitlements": [
+    { "type": "gpu" }
+  ]
+}
