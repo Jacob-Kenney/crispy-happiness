@@ -1,0 +1,26 @@
+services:
+  inference:
+    image: ghcr.io/ggml-org/llama.cpp:server-b12033@sha256:0b0212befa4facc6fd1e34ee04e19f13b570d0b9ec87d26edf4c402dc0dd636f
+    network_mode: host
+    command:
+      - --hf-repo
+      - LiquidAI/LFM3-Omni-2B-GGUF:Q4_K_M
+      - --alias
+      - lfm3-omni
+      - --reasoning
+      - "off"
+      - --temp
+      - "0"
+      - --ctx-size
+      - "4096"
+      - --parallel
+      - "1"
+      - --n-gpu-layers
+      - auto
+      - --port
+      - "8088"
+    volumes:
+      - lfm3-omni-models:/models
+
+volumes:
+  lfm3-omni-models:

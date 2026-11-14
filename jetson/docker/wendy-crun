@@ -1,0 +1,38 @@
+#!/bin/sh
+set -eu
+
+bundle=
+create=false
+for argument do
+  case "$argument" in
+    create) create=true ;;
+  esac
+done
+
+if "$create" && [ ! -e /sys/fs/cgroup/system.slice/io.max ]; then
+  previous=
+  for argument do
+    case "$previous" in
+      --bundle|-b) bundle=$argument; break ;;
+    esac
+    case "$argument" in
+      --bundle=*) bundle=${argument#--bundle=}; break ;;
+    esac
+    previous=$argument
+  done
+  config=${bundle:-.}/config.json
+
+  # Docker can emit an empty blockIO object on kernels without I/O throttling.
+  # Keep any explicit resource limits for the runtime to validate.
+  if /usr/bin/jq -e '
+    .linux.resources.blockIO
+    | type == "object" and all(.[]; . == null or . == [] or . == 0)
+  ' "$config" >/dev/null; then
+    updated=$(mktemp "${config}.XXXXXX")
+    trap 'rm -f "$updated"' EXIT
+    /usr/bin/jq 'del(.linux.resources.blockIO)' "$config" > "$updated"
+    mv -f "$updated" "$config"
+  fi
+fi
+
+exec /usr/bin/crun "$@"
