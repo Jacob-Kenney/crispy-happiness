@@ -207,3 +207,38 @@ footer {
   .dpad { grid-template-columns: repeat(3, 2.75rem); }
   .actions kbd { min-width: 3.45rem; }
 }
+
+.leaderboard {
+  margin-top: 1.25rem;
+  padding: clamp(1rem, 3vw, 1.65rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--panel);
+}
+
+.leaderboard-heading, .leaderboard form > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .7rem;
+}
+
+.leaderboard-heading h2 { margin: 0; }
+.leaderboard p, .leaderboard label { color: var(--secondary); font-size: .9rem; }
+.leaderboard button, .leaderboard input {
+  min-height: 2.5rem;
+  border: 1px solid #575e4b;
+  border-radius: .35rem;
+  background: #30352a;
+  color: var(--text);
+  font: inherit;
+  padding: .35rem .7rem;
+}
+.leaderboard button:disabled { opacity: .55; }
+.leaderboard button:hover:not(:disabled) { border-color: var(--accent); }
+.leaderboard form > div { justify-content: start; margin-top: .3rem; flex-wrap: wrap; }
+.leaderboard input { min-width: 0; max-width: 100%; }
+.leaderboard-scores { padding: 0 0 0 1.6rem; }
+.leaderboard-scores li { border-bottom: 1px solid var(--line); padding: .5rem 0 .5rem .3rem; }
+.leaderboard-scores li::marker, .leaderboard-scores strong { color: var(--accent); font: .9rem var(--mono); }
+.leaderboard-scores strong { float: right; }

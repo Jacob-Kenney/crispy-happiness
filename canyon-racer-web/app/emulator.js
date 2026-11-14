@@ -1,3 +1,5 @@
+import { cartridgeHighScore } from './cartridge-score';
+
 const CORE_URL = '/emulator/binjgb.js';
 const ROM_URL = '/rom/canyon-racer.gb';
 const SAVE_KEY = 'canyon-racer.cartridge-ram';
@@ -45,7 +47,7 @@ export function loadCartridge() {
   return resources;
 }
 
-export function createEmulator(core, rom, canvas, audio) {
+export function createEmulator(core, rom, canvas, audio, onHighScore) {
   const context = canvas.getContext('2d', { alpha: false });
   if (!context) throw new Error('This browser could not initialize the game screen.');
 
@@ -88,6 +90,7 @@ export function createEmulator(core, rom, canvas, audio) {
     }
   }
 
+  let highScore = 0;
   try {
     const saved = localStorage.getItem(SAVE_KEY);
     if (saved) {
@@ -96,16 +99,23 @@ export function createEmulator(core, rom, canvas, audio) {
         if (bytes.length !== ram.length) return;
         for (let index = 0; index < ram.length; index++) ram[index] = bytes.charCodeAt(index);
         core._emulator_read_ext_ram(emulator, file);
+        highScore = cartridgeHighScore(ram);
       });
     }
   } catch {
     // Storage can be unavailable or contain a corrupt save.
   }
+  onHighScore(highScore);
 
   function saveCartridge() {
     try {
       withCartridgeRam((file, ram) => {
         core._emulator_write_ext_ram(emulator, file);
+        const score = cartridgeHighScore(ram);
+        if (score !== highScore) {
+          highScore = score;
+          onHighScore(score);
+        }
         localStorage.setItem(SAVE_KEY, btoa(String.fromCharCode(...ram)));
       });
     } catch {

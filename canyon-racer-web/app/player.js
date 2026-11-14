@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createEmulator, loadCartridge } from './emulator';
+import Leaderboard from './leaderboard';
 
 const keyboard = new Map(Object.entries({
   ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
@@ -14,6 +15,7 @@ export default function Player() {
   const cabinet = useRef(null);
   const session = useRef(null);
   const [status, setStatus] = useState('ready');
+  const [highScore, setHighScore] = useState(0);
   const [muted, setMuted] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [fullscreenAvailable, setFullscreenAvailable] = useState(false);
@@ -76,7 +78,7 @@ export default function Player() {
     try {
       const [core, rom] = await loadCartridge();
       if (session.current !== active) return;
-      active.emulator = createEmulator(core, rom, canvas.current, active.audio);
+      active.emulator = createEmulator(core, rom, canvas.current, active.audio, setHighScore);
       canvas.current.focus({ preventScroll: true });
       setStatus('playing');
     } catch (error) {
@@ -145,7 +147,7 @@ export default function Player() {
     );
   }
 
-  return (
+  return <>
     <section className="cabinet" ref={cabinet} aria-label="Canyon Racer game player">
       <div className="game-panel">
         <div className="screen">
@@ -187,5 +189,6 @@ export default function Player() {
         <p className="tip">Hold <kbd>↑</kbd> + <kbd>Z</kbd> for a longer jump. Setting a checkpoint costs one life.</p>
       </aside>
     </section>
-  );
+    <Leaderboard highScore={highScore} />
+  </>;
 }
