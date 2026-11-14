@@ -73,3 +73,49 @@ is the only approximation versus the training's full-vocabulary group sums.
 Training-run summary at iteration 368 (753,664 steps, run stopped): mean eval
 1,410 frames / max score 162, invalid token mass 0.020, entropy 0.937
 (`runs/main11/metrics.csv`).
+
+## Jetson Docker policy endpoint
+
+The Jetson deployment uses `jetson-policy-server.cpp` with the ARM64 CUDA 13
+libraries from [llama-cpp-builder b11530](https://github.com/hybridgroup/llama-cpp-builder/releases/tag/b11530).
+It evaluates the [trained Q8_0 export](https://huggingface.co/aldigobbler/canyon-racer-lfm2-230m-gguf)
+on the Orin GPU, sums scores over all matching action tokens, and adds the
+published action prior. It accepts the compact game state followed by
+`last=<action>` and returns the selected action as JSON.
+
+Build the server on Linux ARM64 with a C++20 compiler. Put `llama.h` from
+`include/` and the headers from `ggml/include/` from the upstream b11530
+source in the include directory:
+
+```sh
+g++ -std=c++20 -O2 -Wall -Wextra -I /path/to/headers \
+  canyon-server/jetson-policy-server.cpp -ldl -o jetson-policy-server
+```
+
+On the Jetson, place the model, binary, and ARM64 `libgomp.so.1` in
+`/var/lib/canyon-rl`. Put the extracted llama.cpp libraries in its
+`runtime-parallel/` subdirectory. The Docker command below uses the Jetson's
+CUDA and glibc libraries.
+
+```sh
+docker run -d --name canyon-rl --network host --device nvidia.com/gpu=all \
+  -v /var/lib/canyon-rl:/canyon:ro \
+  -v /lib/ld-linux-aarch64.so.1:/lib/ld-linux-aarch64.so.1:ro \
+  -v /usr/lib:/wendy-usr-lib:ro -v /usr/local/cuda-13.2:/cuda:ro \
+  -e LD_LIBRARY_PATH=/canyon/runtime-parallel:/canyon:/cuda/lib:/wendy-usr-lib \
+  -w /canyon/runtime-parallel alpine:3.23 \
+  /canyon/jetson-policy-server /canyon/canyon-lfm2-230m-q8_0.gguf
+```
+
+Run these checks from the Jetson shell. The server listens on loopback.
+
+```sh
+curl -fsS http://127.0.0.1:8080/health
+curl -fsS -H 'Content-Type: text/plain' --data-binary @- http://127.0.0.1:8080/action <<'EOF'
+x=68 y=112 z=0 ground inv=1 lv=0 sc=0 spd=500
+canyon 64..96 dx=-12 gl=12 gr=12
+front 64..96 64..96 64..96
+obs none
+last=wait
+EOF
+```

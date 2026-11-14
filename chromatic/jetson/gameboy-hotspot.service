@@ -1,0 +1,14 @@
+[Unit]
+Description=GameBoy hotspot and DHCP
+Wants=NetworkManager.service
+After=NetworkManager.service
+Before=docker.service
+
+[Service]
+ExecStartPre=/usr/bin/nmcli --wait 45 connection up GameBoy-Live ifname wlan0
+ExecStart=/usr/bin/dnsmasq --keep-in-foreground --port=0 --interface=wlan0 --bind-interfaces --except-interface=lo --dhcp-range=10.42.0.20,10.42.0.100,255.255.255.0,2h --dhcp-host=a4:f0:0f:e2:84:80,10.42.0.60 --dhcp-option=3 --dhcp-option=6 --dhcp-leasefile=/var/lib/canyon-rl/gameboy.leases
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

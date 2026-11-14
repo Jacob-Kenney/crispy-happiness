@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile, writeFile} from 'node:fs/promises';
-import {CablePeer, StateParser, crc8, decodeState, inputMask} from '../chromatic/protocol.mjs';
+import {CablePeer, StateParser, crc8, decodeState, inputMask} from '../chromatic/jetson-test/protocol.mjs';
 
 test('state CRC, framing, loss recovery and input validation', () => {
   const p = new Uint8Array(64);
@@ -42,12 +42,20 @@ test('real ROM exchanges CRC-valid state and receives controls through two CWL2 
   g.smgba_link_enable(machine, 1);
   const gp = g.malloc(4096), mp = master.malloc(4096);
   let now = 1; const states = [], outbound = [];
-  const peer = new CablePeer(slave, p => outbound.push(p), s => states.push(s), () => now);
+  const pacedFrames = [];
+  const peer = new CablePeer(slave, p => outbound.push(p), (s, packet) => {
+    states.push(s);
+    if (packet[62] === 2) peer.decisionMask = 0;
+    if (packet[62] === 1) {
+      pacedFrames.push(s.frame);
+      peer.decisionMask = pacedFrames.length < 10 ? 2 : 0;
+    }
+  }, () => now);
   master.sgl_cwl_reset(now, 1, 0);
   let remoteSeen = false;
-  for (; now < 120000; now++) {
+  for (; now < 240000; now++) {
     // Exercise menus using the actual remote controls, then steer in gameplay.
-    peer.mask = states.at(-1)?.playing && !states.at(-1)?.paused ? (states.some(s => s.playing && s.remoteKeys === 2) ? 0 : 2) : (now % 6000 < 3000 ? 128 : 0);
+    peer.mask = states.at(-1)?.playing ? 0 : (now % 6000 < 3000 ? 128 : 0);
     for (let i = 0; i < 4; i++) {
       g.smgba_run_slice(machine, 1048);
       if (g.smgba_link_stalled(machine)) break;
@@ -74,6 +82,8 @@ test('real ROM exchanges CRC-valid state and receives controls through two CWL2 
   assert.ok(states.length > 10, `only ${states.length} states received`);
   assert.ok(remoteSeen, 'ROM did not accept remote controls');
   assert.ok(states.some(s => s.playing), 'remote controls did not enter gameplay');
+  assert.ok(pacedFrames.length > 10, 'ROM did not request repeated decisions');
+  assert.ok(pacedFrames.slice(1, 10).every((frame, i) => frame - pacedFrames[i] === 4), 'decisions did not advance four frames');
   assert.ok(states.some(s => s.playing && s.remoteKeys === 2), "gameplay did not receive steering");
   assert.ok(states.at(-1).remoteKeys === 0, "buttons did not release");
   assert.ok(states.some(s => s.obstacles.length), 'no live obstacles observed');

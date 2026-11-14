@@ -10,6 +10,7 @@ Chromatic ROM → Shiny Relay wireless cable → WSS /link → bridge → localh
 ```
 
 This implementation uses **Shiny Relay's existing CWL2 wireless cable mode**.
+For physical play over the GameBoy hotspot, see [the Jetson controller setup](jetson-test/README.md#play-over-the-gameboy-hotspot).
 UDP is the local agent interface; the internet leg is WebSocket/TCP, not UDP.
 It does not implement Shiny's private native network-window/room SDK. The cable
 mode exchanges serial bytes and can have substantial latency over the internet.
@@ -21,12 +22,13 @@ Physical Chromatic operation and live account authentication still need validati
 Requires GBDK-2020 (tested with 4.5.0), Node.js 22+ and Python 3 for the example.
 
 ```sh
-make -C canyon-racer gb AGENT_LINK=1 CART_TYPE=mbc5 GBDK_HOME=/path/to/gbdk/
+git submodule update --init canyon-racer
+GBDK_HOME=/path/to/gbdk ./chromatic/build-agent-rom.sh
 ```
 
 ROM: `canyon-racer/build/gb/canyon_racer_0.7.7_agent_mbc5.gb` (32 KB, MBC5).
-The agent build has separate objects and filename. Builds without `AGENT_LINK=1`
-retain normal controls and do not activate serial telemetry.
+The script builds in a temporary copy of the submodule source and adds the
+serial hooks there. Normal builds of the submodule retain the original controls.
 
 Install the ROM using your existing cartridge workflow, or Shiny Relay's
 [cartridge installer](https://install.shinyrelay.com/cart/). Preserve the backup
@@ -120,8 +122,14 @@ All fields are unsigned bytes except the explicitly little-endian words.
 | 22 | 15 | five `(y, raw type/flags, canyon left at y)` records |
 | 37 | 18 | canyon left x at rows 0, 8, …, 136; canyon width is 32 |
 | 55 | 2 | obstacle speed, unsigned 8.8 fixed point, little-endian |
-| 57 | 6 | reserved, zero |
+| 57 | 5 | Optional exact wall samples. Byte 57 is 1 when bytes 58–61 contain the walls at the ship collision row and three rows ahead. Otherwise zero. |
+| 62 | 1 | Optional policy pacing. 1 requests a decision for the next four frames, 2 advertises support, 0 is legacy. |
 | 63 | 1 | CRC-8 polynomial 0x07, init=0 over bytes 0–62 |
+
+The Jetson controller uses `A6 mask (mask XOR 5A)` for a four-frame decision
+when the ROM advertises pacing. The game waits for that reply with the canyon
+scroll held. Local buttons can interrupt the wait. The existing `A5` messages
+continue to provide menu controls and a heartbeat.
 
 The reverse serial stream repeats `[0xA5, buttons, buttons XOR 0x5A]`.
 Commands may cross state-packet boundaries. A partial command cannot change input.

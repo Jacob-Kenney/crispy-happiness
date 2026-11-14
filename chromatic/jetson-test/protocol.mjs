@@ -11,8 +11,9 @@ export function crc8(bytes) {
   return crc;
 }
 const bcd = value => (value >> 4) * 10 + (value & 15);
-export function decodeState(p) {
-  if (p.length !== 64 || p[0] !== 67 || p[1] !== 82 || p[2] !== 1 || crc8(p.subarray(0, 63)) !== p[63])
+export function decodeState(p, verifyChecksum = true) {
+  if (p.length !== 64 || p[0] !== 67 || p[1] !== 82 || p[2] !== 1 ||
+      (verifyChecksum && crc8(p.subarray(0, 63)) !== p[63]))
     throw new Error('invalid Canyon state packet');
   if (p[21] > 5) throw new Error('invalid obstacle count');
   const u16 = i => p[i] | p[i + 1] << 8;
@@ -55,13 +56,17 @@ export class CablePeer {
   constructor(core, send, onState, now = () => performance.now() >>> 0) {
     this.core = core; this.send = send; this.now = now;
     this.ptr = core.malloc(4096); this.parser = new StateParser(onState);
-    this.mask = 0; this.control = [0xA5, 0, 0x5A]; this.controlIndex = 0;
+    this.mask = 0; this.decisionMask = null; this.control = [0xA5, 0, 0x5A]; this.controlIndex = 0;
     core.sgl_cwl_reset(now(), 1, 0);
     core.sgl_cwl_event(1, 0, now()); // port connected
     this.arm();
   }
   arm() {
-    if (this.controlIndex === 0) this.control = [0xA5, this.mask, this.mask ^ 0x5A];
+    if (this.controlIndex === 0) {
+      const mask = this.decisionMask ?? this.mask;
+      this.control = [this.decisionMask === null ? 0xA5 : 0xA6, mask, mask ^ 0x5A];
+      this.decisionMask = null;
+    }
     const byte = this.control[this.controlIndex];
     this.controlIndex = (this.controlIndex + 1) % 3;
     this.core.sgl_cwl_event(4, byte, this.now()); // external-clock slave armed
