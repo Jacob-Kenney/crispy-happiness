@@ -63,7 +63,13 @@ static void encode_state(uint8_t playing, uint8_t local_keys, uint8_t input, uin
         uint8_t y = state.obstacles[index].y.h;
         packet[offset++] = y;
         packet[offset++] = state.obstacles[index].type;
+#ifdef ROAD_RACER
+        const uint8_t kind = state.obstacles[index].type;
+        packet[offset - 1] = kind;
+        packet[offset++] = wall_at(y < 144u ? y : 143u) + road_offset(kind & 7u, y);
+#else
         packet[offset++] = wall_at(y < 144u ? y : 143u);
+#endif
         if (++index == OBSTACLES_COUNT_TOTAL) index = 0u;
     }
     while (offset < 37u) packet[offset++] = 0u;

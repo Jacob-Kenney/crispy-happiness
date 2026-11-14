@@ -79,10 +79,20 @@ counters report the request-to-input time measured by the ROM in VBlanks,
 Compare changes in `frame` and `vblank` during active racing to measure the
 game's update rate, excluding menus and the game's rewind animations.
 
+Press **START** to pause, **SELECT** to switch between **BOT** and **YOU**,
+then **START** to resume. The pause screen shows who will drive. The ROM
+starts in **BOT** mode. While paused or in **YOU** mode, it sends no game
+state and applies no bot input. The live graph resumes when bot play resumes.
+
 ### Startup and recovery
 
-The Chromatic loads the internal library entry named `Canyon-Mailbox` once at
-startup. To build the ESP32 image from a Shiny Relay 1.1.12 source tree in
+The Chromatic prefers `Road Racer 3 Lives` at startup, followed by
+`Road Racer Road Edition`, `Canyon-Select`, and `Canyon-Mailbox`. To play the original
+version for a session, exit the current game and select `Canyon-Mailbox` in
+the library, or run `rc stop` followed by `lib play <UID>` in the USB console.
+Use `lib ls` to find the original entry's UID. Each entry has its own save.
+
+To build the ESP32 image from a Shiny Relay 1.1.12 source tree in
 `.chromatic/shiny-relay-src-1.1.12`, run both preparation scripts from a
 workspace that contains that directory:
 
@@ -97,7 +107,7 @@ docker run --rm --mount "type=bind,source=$workspace/.chromatic/bridge-build/mcu
 
 The verified device uses `ota_0` at `0x10000` for the ESP32 image and the
 game staging region at `0x210000`. From the USB console,
-`lib imp 0x210000 32768 play Canyon-Mailbox` imports a staged raw ROM and
+`lib imp 0x210000 32768 play Canyon-Select` imports a staged raw ROM and
 starts it. `lib ls` verifies the entry. Keep the original application backup
 and verify the partition layout before flashing. The game library records its
 game saves in flash. A reboot starts a new race.
@@ -117,3 +127,35 @@ docker update --restart unless-stopped canyon-rl canyon-mailbox
 Verify with `iw dev wlan0 info`, `docker ps`, and `docker logs --tail 20
 canyon-mailbox`. A rising `applied` counter confirms that decisions are
 reaching the physical game.
+
+## Online learning on the Jetson
+
+Set `CANYON_LEARNING_DIR=/learning` on the mailbox controller and mount a
+writable host directory there. The deployed learner uses
+`/var/lib/canyon-rl/online-policy`. It keeps the GGUF as its baseline and adjusts
+move preferences by game context. Score gains and crashes update preferences
+for inputs the Chromatic confirms applying. The controller occasionally samples
+an alternative move near an obstacle. It saves a checkpoint after each observed
+crash and keeps the last 32 archives.
+
+Run the rollback commands from the Jetson shell. To restore a prior checkpoint,
+list the archives and substitute the selected filename:
+
+```sh
+cd /var/lib/canyon-rl/online-policy
+ls -t checkpoint-*.json
+docker stop canyon-mailbox
+cp checkpoint-SELECTED.json current.json
+docker start canyon-mailbox
+```
+
+To restore the original controller, including the original action selection:
+
+```sh
+docker stop canyon-mailbox
+docker update --restart no canyon-mailbox
+docker rename canyon-mailbox canyon-mailbox-online
+docker rename canyon-mailbox-baseline canyon-mailbox
+docker update --restart unless-stopped canyon-mailbox
+docker start canyon-mailbox
+```
