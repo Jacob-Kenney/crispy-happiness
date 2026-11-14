@@ -86,7 +86,7 @@ state and applies no bot input. The live graph resumes when bot play resumes.
 
 ### Startup and recovery
 
-The Chromatic prefers `Road Racer 3 Lives` at startup, followed by
+The Chromatic prefers `RL RACER` at startup, followed by `Road Racer 3 Lives`,
 `Road Racer Road Edition`, `Canyon-Select`, and `Canyon-Mailbox`. To play the original
 version for a session, exit the current game and select `Canyon-Mailbox` in
 the library, or run `rc stop` followed by `lib play <UID>` in the USB console.

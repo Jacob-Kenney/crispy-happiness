@@ -16,7 +16,7 @@ function edit(path, edits) {
 }
 edit('Makefile', [
   ['CFLAGS += -DCART_', 'CFLAGS += -DROAD_RACER -DCART_'],
-  ['yn"CANYONRACER"', 'yn"ROADRACER" -Wm-yc'],
+  ['yn"CANYONRACER"', 'yn"RLRACER" -Wm-yc'],
 ]);
 edit('src/fade.c', [
   ['#include "fade.h"', '#include "fade.h"\n#include "road.h"'],
@@ -77,7 +77,7 @@ edit('src/gameplay.c', [
   ['#include "input.h"', '#include "input.h"\n#include "road.h"'],
   ['    lives_count_reset();', '    road_rocket_reset();\n    lives_count_reset();'],
   ['        // Deduct Life / Restore Point (not part of save state)\n        LIVES_COUNT_SUBTRACT_ONE();\n',
-   '        // Saving a checkpoint does not cost a life in Road Racer.\n'],
+   '        // Saving a checkpoint does not cost a life in RL RACER.\n'],
   ['        // Deduct Life / Restore Point and update display counters\n        LIVES_COUNT_SUBTRACT_ONE();',
    '        // Refresh the HUD after restoring the checkpoint.'],
   ['            // Try to restore if the user has rewinds left',
@@ -92,6 +92,6 @@ edit('src/splash_screen.c', [
   [/    \/\/ This doesn't accept arbitrary tile count[\s\S]*?(?=    \/\/ Window start)/,
    '    set_bkg_data(bg_next_free_tile, sizeof road_font / 16u, road_font);\n' +
    '    fill_win_rect(0, 0, 22, 13, bg_next_free_tile);\n' +
-   '    set_win_based_tiles(6, 4, sizeof road_title, 1, road_title, bg_next_free_tile);\n' +
+   '    set_win_based_tiles(7, 4, sizeof road_title, 1, road_title, bg_next_free_tile);\n' +
    '    set_win_based_tiles(6, 8, sizeof road_start, 1, road_start, bg_next_free_tile);\n\n'],
 ]);

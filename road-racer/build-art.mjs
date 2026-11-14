@@ -82,9 +82,8 @@ writeFileSync(obstacleHeader, readFileSync(obstacleHeader,'utf8')
 
 const letters = {
   R:['1110','1001','1001','1110','1010','1001','1001'],
-  O:['0110','1001','1001','1001','1001','1001','0110'],
+  L:['1000','1000','1000','1000','1000','1000','1111'],
   A:['0110','1001','1001','1111','1001','1001','1001'],
-  D:['1110','1001','1001','1001','1001','1001','1110'],
   C:['0111','1000','1000','1000','1000','1000','0111'],
   E:['1111','1000','1000','1110','1000','1000','1111'],
   P:['1110','1001','1001','1110','1000','1000','1000'],
@@ -94,7 +93,7 @@ const letters = {
 const chars = Object.keys(letters);
 const font = chars.flatMap(char => rows([...letters[char].map(line => '00' + line.replaceAll('1','3') + '00'), '00000000']));
 const textTiles = text => [...text].map(char => chars.indexOf(char) + 1);
-const titleMap = textTiles('ROAD RACER');
+const titleMap = textTiles('RL RACER');
 const startMap = textTiles('PRESS START');
 writeFileSync(join(root,'src/road_title.h'), [
   'static const uint8_t road_font[] = {' + hex([...Array(16).fill(0), ...font]) + '};',

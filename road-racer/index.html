@@ -3,158 +3,245 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#111411">
-<title>Road Racer Versus</title>
+<meta name="theme-color" content="#ffcc55">
+<title>RL RACER</title>
 <style>
 :root {
-  color-scheme: dark;
-  --bg: #111411;
-  --panel: #1a1e19;
-  --inset: #151914;
-  --line: #353c32;
-  --muted: #a9b1a4;
-  --ink: #f2f3e9;
-  --accent: #dcf981;
-  --amber: #ffc580;
-  --red: #ff9283;
-  --mono: "IBM Plex Mono", ui-monospace, monospace;
-  font: 15px "Inter", system-ui, sans-serif;
-  background: var(--bg);
+  color-scheme: light;
+  --paper: #f6eedb;
+  --panel: #fff8e8;
+  --ink: #222339;
+  --muted: #555166;
+  --line: #d1c3b4;
+  --purple: #d1c2f4;
+  --yellow: #ffcc55;
+  --mint: #bae28d;
+  --red: #a12d3e;
+  --mono: "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+  font: 14px/1.45 var(--mono);
   color: var(--ink);
+  background: var(--paper);
 }
 * { box-sizing: border-box; }
-body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at top, #21271c, transparent 64%); }
+body { margin: 0; min-height: 100vh; background-image: radial-gradient(#bfb39e 1px, transparent 1px); background-size: 12px 12px; }
 h1, h2, p, dl, dd, ol { margin: 0; }
-main { width: min(1360px, calc(100% - 72px)); margin: auto; padding: 28px 0 36px; }
-.masthead { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-bottom: 21px; border-bottom: 1px solid var(--line); }
-.brand { display: flex; align-items: center; gap: 13px; }
-.brand-mark { flex: none; width: 43px; height: 43px; border-radius: 10px; background: var(--accent); display: grid; place-items: center; }
-.brand-mark::before { content: ""; width: 20px; height: 22px; transform: skewX(-15deg); background: repeating-linear-gradient(90deg, #202819 0 4px, transparent 4px 8px); }
-h1 { font-size: clamp(24px, 3vw, 39px); font-weight: 800; letter-spacing: -.037em; line-height: 1; }
-h1 span { color: #c1c8b7; font-weight: 500; }
-h2 { font-size: 18px; font-weight: 700; letter-spacing: -.025em; }
-.connection { display: flex; align-items: center; gap: 8px; background: var(--inset); border: 1px solid var(--line); border-radius: 7px; padding: 9px 11px; font: 11px var(--mono); white-space: nowrap; }
-.connection::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-.connection[data-tone="live"] { color: var(--accent); }
-.connection[data-tone="live"]::before { box-shadow: 0 0 11px #cfe77880; }
-.connection[data-tone="hold"] { color: var(--amber); }
-.connection[data-tone="offline"] { color: var(--muted); }
-.grid { display: grid; grid-template-columns: minmax(0,1.85fr) minmax(290px,1fr); gap: 18px; align-items: start; margin-top: 19px; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; min-width: 0; }
-.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 17px; min-height: 51px; }
-.card-head small, .queue-meter { font: 11px var(--mono); color: var(--muted); }
-.track { position: relative; background: #202c1f; overflow: hidden; }
-#road { width: 100%; display: block; aspect-ratio: 760 / 480; }
-.track-note { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 20px; background: #10150e91; pointer-events: none; }
+main { width: min(1340px, calc(100% - 72px)); margin: auto; padding: 26px 0 40px; }
+.sr-only { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; white-space: nowrap; }
+.masthead {
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;
+  padding: 14px 18px; background: var(--yellow); border: 3px solid var(--ink); box-shadow: 5px 5px var(--ink);
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-mark, .wordmark, .hazard-icon, #road { display: block; image-rendering: pixelated; }
+.brand-mark { width: 36px; height: 36px; }
+.wordmark { width: min(258px, 58vw); height: auto; }
+.connection {
+  display: flex; align-items: center; gap: 9px; padding: 6px 9px; border: 2px solid var(--ink);
+  background: var(--panel); text-transform: uppercase; font-weight: 700; font-size: 11px;
+}
+.connection::before { content: ""; width: 8px; height: 8px; background: currentColor; }
+.connection[data-tone="live"] { background: var(--mint); }
+.connection[data-tone="hold"] { background: var(--purple); }
+.page-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.page-tabs a, .model-links a {
+  display: inline-block; padding: 8px 11px; border: 2px solid var(--ink);
+  background: var(--panel); color: var(--ink); font-weight: 800; text-decoration: none;
+  box-shadow: 2px 2px var(--ink);
+}
+.page-tabs a[aria-current="page"] { background: var(--ink); color: var(--panel); }
+.page-tabs a:hover:not([aria-current]), .model-links a:hover { background: var(--mint); }
+.page-tabs a:focus-visible, .model-links a:focus-visible { outline: 2px dashed var(--ink); outline-offset: 3px; }
+[hidden] { display: none !important; }
+.grid { display: grid; grid-template-columns: minmax(0,1.85fr) minmax(300px,1fr); gap: 21px; align-items: start; margin-top: 24px; }
+.system-page { display: grid; gap: 21px; margin-top: 18px; }
+.system-content { padding: 14px; }
+.system-content p { max-width: 80ch; }
+.model-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin: 14px 0; }
+.model-facts div { padding: 8px; border: 1px dashed var(--muted); background: #eee3cf; }
+.model-facts dd { font-size: 14px; }
+.model-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.model-links a { font-size: 12px; }
+.system-diagram {
+  display: grid; grid-template-columns: minmax(0,1fr) minmax(120px,.72fr) minmax(0,1fr) minmax(120px,.72fr) minmax(0,1fr);
+  gap: 12px; align-items: center; padding: 18px 14px 13px;
+  border: 2px solid var(--ink); background: #e9def5;
+  background-image: radial-gradient(#ad9ac3 1px, transparent 1px); background-size: 12px 12px;
+}
+.system-node { min-width: 0; text-align: center; }
+.device-art { display: block; width: min(100%, 204px); height: auto; margin: 0 auto; image-rendering: pixelated; }
+.system-node h3 { display: inline-block; margin: 5px 0 0; padding: 4px 7px; border: 2px solid var(--ink); background: var(--yellow); box-shadow: 2px 2px var(--ink); font-size: 12px; }
+.system-node:nth-of-type(2) h3 { background: var(--mint); }
+.system-node:last-child h3 { background: #fff8e8; }
+.system-wire { min-width: 0; text-align: center; }
+.system-wire strong { display: block; margin-bottom: 4px; font-size: 11px; }
+.system-packet { display: block; width: 100%; padding: 3px 4px 5px; font-size: 11px; }
+.system-packet + .system-packet { margin-top: 6px; }
+.system-packet[aria-pressed="true"] { background: var(--yellow); }
+.packet-track { position: relative; display: block; margin: 5px 4px 0; height: 6px; border-top: 1px dashed var(--ink); }
+.packet-track::after { content: ""; position: absolute; left: 0; top: -3px; width: 6px; height: 6px; background: #864fb0; }
+.system-packet[aria-pressed="true"] .packet-track::after { animation: packet-flow 1.4s steps(9,end) 2; }
+.system-packet[data-direction="back"] .packet-track::after { left: calc(100% - 6px); background: #517745; animation-direction: reverse; }
+@keyframes packet-flow { from { left: 0; } to { left: calc(100% - 6px); } }
+.system-explanation {
+  margin: 12px 0 0; min-height: 54px; padding: 9px 11px;
+  border-left: 4px solid #864fb0; background: #eee3cf; font-size: 12px;
+}
+.system-explanation strong { display: block; }
+@media (max-width: 760px) {
+  .system-diagram { grid-template-columns: minmax(0,1fr); gap: 15px; }
+  .device-art { width: 144px; }
+  .system-wire { width: min(100%, 230px); margin: 0 auto; }
+  .packet-direction { display: inline-block; transform: rotate(90deg); }
+}
+@media (prefers-reduced-motion: reduce) { .system-packet[aria-pressed="true"] .packet-track::after { animation: none; } }
+.main-column, .sidebar { display: grid; gap: 18px; min-width: 0; }
+.card { background: var(--panel); border: 3px solid var(--ink); box-shadow: 4px 4px var(--ink); min-width: 0; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 13px; min-height: 48px; border-bottom: 2px solid var(--ink); background: var(--purple); }
+h2 { font-size: clamp(13px, 1.5vw, 17px); font-weight: 900; text-transform: uppercase; letter-spacing: .025em; }
+.card-head small { font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.track { position: relative; overflow: hidden; background: #263a32; border-bottom: 2px solid var(--ink); }
+#road { width: 100%; aspect-ratio: 16 / 9; }
+.track::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, #1e26342e 0 1px, transparent 1px 4px); }
+.model-hud {
+  display: flex; align-items: center; gap: 14px; padding: 12px 13px;
+  color: #e5f5cf; background: #202735;
+}
+.model-hud-plot {
+  position: relative; flex: none; width: 64px; aspect-ratio: 1;
+  border: 1px solid #6c825e;
+  background:
+    linear-gradient(90deg, transparent 49%, #6c825e 49% 51%, transparent 51%),
+    linear-gradient(0deg, transparent 49%, #6c825e 49% 51%, transparent 51%),
+    #131d29;
+}
+.model-hud-plot::before { content: ""; position: absolute; inset: 23%; border: 1px dashed #5e755c; }
+.model-hud-dot {
+  position: absolute; left: 50%; top: 50%; width: 7px; height: 7px;
+  background: #d5fb9c; box-shadow: 0 0 0 2px #4e7051;
+  transform: translate(calc(-50% + var(--model-x, 0px)), calc(-50% + var(--model-y, 0px)));
+  transition: transform 170ms steps(5, end);
+}
+.model-hud[data-state="idle"] .model-hud-dot { background: #87938d; box-shadow: none; }
+.model-hud[data-state="fire"] .model-hud-dot { background: #ffce65; box-shadow: 0 0 0 3px #94653e; }
+#model-readout { font-size: 16px; line-height: 1.2; font-weight: 800; text-transform: uppercase; }
+#model-applied { margin-top: 4px; color: #c3ccbe; font-size: 11px; line-height: 1.25; }
+@media (prefers-reduced-motion: reduce) { .model-hud-dot { transition: none; } }
+.track-note { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; padding: 14px; text-align: center; background: #22233981; pointer-events: none; }
 .track-note[hidden] { display: none; }
-.track-note div { background: #1a2119; border: 1px solid #4a5544; border-radius: 10px; padding: 16px 24px; }
-.track-note strong { font-size: clamp(19px,3vw,30px); letter-spacing: -.045em; }
-.track-note p { color: var(--muted); margin-top: 5px; font-size: 13px; }
-.metrics { display: grid; grid-template-columns: 1fr 1fr repeat(3, .9fr); }
-.metrics div { min-width: 0; padding: 12px 15px; border-right: 1px solid var(--line); }
+.track-note div { max-width: 100%; padding: 9px 16px; border: 2px solid var(--ink); background: var(--panel); box-shadow: 4px 4px var(--ink); }
+.track-note strong { font-size: clamp(13px, 2.3vw, 22px); text-transform: uppercase; }
+.track-note p { color: var(--muted); margin-top: 4px; font-size: 12px; }
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.metrics div { padding: 9px 12px; min-width: 0; border-right: 2px solid var(--ink); }
+.metrics div:first-child { background: var(--mint); }
 .metrics div:last-child { border-right: 0; }
-dt { font: 10px var(--mono); text-transform: uppercase; letter-spacing: .075em; color: var(--muted); }
-dd { font: 650 clamp(17px,2vw,25px) var(--mono); margin-top: 4px; line-height: 1.1; }
-#driver { color: var(--accent); }
-#destroyed { color: var(--amber); }
+dt { font-size: 10px; line-height: 1.2; text-transform: uppercase; }
+dd { font-size: clamp(16px, 2.2vw, 25px); font-weight: 900; line-height: 1.15; margin-top: 5px; overflow-wrap: anywhere; }
+#destroyed { color: #825015; }
 #hits { color: var(--red); }
-.sidebar { display: grid; gap: 14px; }
-.hazard-card .card-head { border-bottom: 1px solid var(--line); }
-.controls { padding: 2px 16px 11px; }
-.hazard { padding: 10px 0; border-bottom: 1px solid var(--line); }
-.hazard-label { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-weight: 650; font-size: 13px; }
-.hazard-label::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--tone); }
-.chicken { --tone: #efe3ac; }
-.pedestrian { --tone: #c1b2ff; }
-.cone { --tone: #ffb37c; }
-.buttons { display: grid; grid-auto-columns: minmax(0,1fr); grid-auto-flow: column; gap: 7px; }
-button { border: 1px solid #485144; border-radius: 6px; background: #252c22; color: var(--ink); font: 600 12px "Inter", system-ui, sans-serif; cursor: pointer; }
-.buttons button { display: flex; justify-content: space-between; align-items: center; gap: 4px; padding: 7px 10px; min-height: 38px; }
-button:hover:not(:disabled) { background: #333e2d; border-color: var(--tone, var(--accent)); }
-button:active:not(:disabled) { background: #414d36; }
-button:disabled { opacity: .5; cursor: default; }
-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-kbd { font: 10px var(--mono); color: #cdd3c7; border-radius: 4px; border: 1px solid #5a6355; padding: 1px 4px; }
-.feedback { padding-top: 9px; min-height: 25px; font-size: 12px; color: var(--accent); }
+.hazard-card .card-head { background: var(--yellow); flex-wrap: wrap; }
+.controls { padding: 0 12px 10px; }
+.auto-help, .feedback { padding: 8px 0; color: var(--muted); font-size: 12px; }
+.feedback { min-height: 32px; }
 .feedback[data-error="true"] { color: var(--red); }
-.queue-meter { display: flex; gap: 8px; align-items: center; }
-meter { width: 60px; height: 8px; appearance: none; }
-meter::-webkit-meter-bar { background: var(--inset); border: 1px solid var(--line); }
-meter::-webkit-meter-optimum-value { background: var(--accent); }
-meter::-moz-meter-bar { background: var(--accent); }
-.queue-list, .feed-list { list-style: none; padding: 0 16px 12px; }
+.hazard { padding: 8px 0 10px; border-bottom: 1px dashed #898092; }
+.hazard-label { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-weight: 800; font-size: 13px; }
+.hazard-icon { width: 20px; height: 20px; flex: none; }
+.chicken { --tone: #ffe4a7; }
+.pedestrian { --tone: #e3d8ff; }
+.cone { --tone: #ffc7a2; }
+.buttons { display: grid; grid-auto-columns: minmax(0,1fr); grid-auto-flow: column; gap: 8px; }
+button, select, .player-edit input {
+  border: 2px solid var(--ink); border-radius: 0; background: var(--panel); color: var(--ink); font: 700 12px var(--mono);
+}
+button { cursor: pointer; box-shadow: 2px 2px var(--ink); }
+button:hover:not(:disabled) { background: var(--yellow); }
+button:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: none; }
+button:disabled { opacity: .55; cursor: default; box-shadow: none; }
+:where(button, select, input):focus-visible { outline: 2px dashed var(--ink); outline-offset: 3px; }
+.auto-toggle { white-space: nowrap; padding: 6px 8px; min-height: 32px; }
+.auto-toggle[aria-pressed="true"] { background: var(--mint); }
+.auto-toggle[aria-pressed="true"]::after { content: " / ON"; }
+.buttons button { min-height: 39px; padding: 5px 7px; display: flex; align-items: center; justify-content: space-between; gap: 4px; background: var(--tone); }
+kbd { flex: none; border: 1px solid var(--ink); padding: 2px 4px; background: var(--panel); font: 700 10px var(--mono); }
+.queue-meter { display: flex; gap: 7px; align-items: center; white-space: nowrap; font-size: 11px; }
+meter { width: 56px; height: 12px; appearance: none; }
+meter::-webkit-meter-bar { background: var(--panel); border: 2px solid var(--ink); border-radius: 0; }
+meter::-webkit-meter-optimum-value { background: #4b7859; }
+meter::-moz-meter-bar { background: #4b7859; }
+.queue-list, .feed-list { list-style: none; padding: 9px 12px; font-size: 12px; }
 .queue-list { display: flex; flex-wrap: wrap; gap: 6px; }
-.queue-list li { font: 11px var(--mono); padding: 5px 7px; border: 1px solid var(--line); border-radius: 5px; }
-.queue-list li:first-child:not(.empty) { color: var(--accent); border-color: #617048; }
-.queue-list li.empty, .feed-list li.empty { color: var(--muted); border: 0; padding: 1px 0 3px; }
-.feed-list li { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; border-top: 1px solid var(--line); padding: 8px 0; font-size: 12px; }
-.feed-list li:not(.empty)::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-.feed-list li[data-type="rocket"]::before, .feed-list li[data-type="impact"]::before { background: var(--amber); }
+.queue-list li { border: 1px solid var(--ink); padding: 3px 6px; }
+.queue-list li:first-child:not(.empty) { background: var(--mint); }
+.queue-list li.empty, .feed-list li.empty { color: var(--muted); border: 0; padding: 2px 0; }
+.feed-list li { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; border-bottom: 1px dashed var(--line); padding: 5px 0; }
+.feed-list li:last-child { border-bottom: 0; }
+.feed-list li:not(.empty)::before { content: ""; flex: none; width: 7px; height: 7px; background: #4b7859; }
+.feed-list li[data-type="rocket"]::before, .feed-list li[data-type="impact"]::before { background: #b1642c; }
 .feed-list li[data-type="crash"]::before { background: var(--red); }
 .feed-list li span { flex: 1; }
-.feed-list time { color: var(--muted); font: 10px var(--mono); flex: none; }
-.main-column { display: grid; gap: 14px; min-width: 0; }
-.leaderboard .card-head { flex-wrap: wrap; }
-.leaderboard label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
-.leaderboard select { min-height: 34px; max-width: 100%; border: 1px solid #485144; border-radius: 6px; background: #252c22; color: var(--ink); padding: 0 8px; font: inherit; }
-.leaderboard table { width: 100%; border-collapse: collapse; }
-.leaderboard th, .leaderboard td { padding: 9px 16px; text-align: left; border-top: 1px solid var(--line); }
-.leaderboard th { font: 10px var(--mono); color: var(--muted); text-transform: uppercase; }
-.leaderboard td { font-size: 13px; }
-.leaderboard th:nth-child(3), .leaderboard td:nth-child(3) { text-align: right; }
-.leaderboard td:nth-child(1), .leaderboard td:nth-child(3) { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-.leaderboard tr:first-child td:nth-child(3) { color: var(--accent); font-weight: 700; }
-.leaderboard td:last-child, .leaderboard th:last-child { text-align: right; white-space: nowrap; }
-.leaderboard .empty-score { color: var(--muted); text-align: left; }
-.player-name { display: block; max-width: 100%; min-height: 28px; padding: 2px 0; border: 0; background: transparent; text-align: left; overflow-wrap: anywhere; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
-.player-name:hover:not(:disabled) { background: transparent; color: var(--ink); }
-.leaderboard td:nth-child(2) { width: 48%; }
-.player-mode { display: block; font-size: 11px; color: var(--muted); }
-.player-edit { display: flex; flex-wrap: wrap; gap: 5px; }
-.player-edit input { width: 100%; min-width: 0; min-height: 30px; padding: 4px 6px; border: 1px solid #647253; border-radius: 5px; color: var(--ink); background: var(--inset); font: inherit; }
-.player-edit button, .score-pages button { padding: 4px 8px; min-height: 28px; }
-.player-edit p { flex-basis: 100%; color: var(--red); font-size: 11px; }
-.score-pages { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-top: 1px solid var(--line); }
+.feed-list time { flex: none; font-size: 10px; color: var(--muted); }
+.leaderboard .card-head { flex-wrap: wrap; background: var(--mint); }
+.leaderboard label { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.leaderboard select { min-height: 30px; max-width: 100%; padding: 0 6px; }
+.leaderboard table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.leaderboard th, .leaderboard td { padding: 7px 12px; text-align: left; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
+.leaderboard th { text-transform: uppercase; font-size: 10px; background: #eee3cf; }
+.leaderboard td { font-size: 12px; }
+.leaderboard th:nth-child(1) { width: 13%; }
+.leaderboard th:nth-child(2) { width: 36%; }
+.leaderboard th:nth-child(3) { width: 18%; }
+.leaderboard th:nth-child(3), .leaderboard td:nth-child(3), .leaderboard th:last-child, .leaderboard td:last-child { text-align: right; }
+.leaderboard tbody tr:first-child td:nth-child(3) { font-weight: 900; }
+.leaderboard td.empty-score:last-child { color: var(--muted); text-align: left; }
+.player-name { max-width: 100%; min-height: 26px; padding: 2px 0; border: 0; box-shadow: none; background: transparent; text-align: left; overflow-wrap: anywhere; color: #3d2b81; text-decoration: underline; text-underline-offset: 3px; }
+.player-mode { display: block; color: var(--muted); font-size: 11px; }
+.player-edit { display: flex; flex-wrap: wrap; gap: 6px; }
+.player-edit input { width: 100%; min-width: 0; padding: 4px; }
+.player-edit button, .score-pages button { padding: 4px 6px; min-height: 28px; }
+.player-edit p { flex-basis: 100%; font-size: 11px; color: var(--red); }
+.score-pages { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 8px 12px; border-top: 1px solid var(--line); font-size: 11px; }
 .score-pages[hidden] { display: none; }
-.score-pages span { color: var(--muted); font: 11px var(--mono); }
-.score-note { padding: 0 16px 10px; color: var(--muted); font-size: 12px; }
-@media (max-width: 900px) {
-  main { width: calc(100% - 36px); }
-  .grid { grid-template-columns: minmax(0,1.3fr) minmax(276px,1fr); }
-  .metrics div { padding-inline: 9px; }
+.score-note { padding: 6px 12px; color: var(--muted); font-size: 12px; }
+@media (max-width: 920px) {
+  main { width: calc(100% - 32px); }
+  .grid { grid-template-columns: minmax(0,1.3fr) minmax(290px,1fr); }
+  .metrics div { padding-inline: 7px; }
 }
-@media (max-width: 690px) {
-  main { width: calc(100% - 24px); padding-top: 17px; }
-  .masthead { flex-wrap: wrap; gap: 10px; padding-bottom: 14px; }
-  .grid { grid-template-columns: 1fr; gap: 12px; margin-top: 13px; }
-  .metrics { grid-template-columns: repeat(3,1fr); }
-  .metrics div:nth-child(-n+3) { border-bottom: 1px solid var(--line); }
-  .metrics div:nth-child(3) { border-right: 0; }
-  .metrics div:last-child { grid-column: span 2; }
+@media (max-width: 720px) {
+  main { width: calc(100% - 24px); padding-top: 12px; }
+  .masthead { padding: 9px; gap: 9px; }
+  .brand { gap: 8px; }
+  .brand-mark { width: 25px; height: 25px; }
+  .grid { grid-template-columns: minmax(0,1fr); gap: 14px; margin-top: 16px; }
   .main-column { display: contents; }
   .leaderboard { grid-row: 3; }
-  .leaderboard th, .leaderboard td { padding-inline: 10px; }
+  .leaderboard th, .leaderboard td { padding-inline: 5px; }
+  .sidebar { gap: 13px; }
 }
-@media (pointer: coarse) { kbd { display: none; } .buttons button { min-height: 44px; } }
+@media (pointer: coarse) { kbd { display: none; } .buttons button, .auto-toggle { min-height: 44px; } }
 </style>
 </head>
 <body>
 <main>
   <header class="masthead">
-    <div class="brand"><span class="brand-mark" aria-hidden="true"></span><h1>Road Racer <span>Versus</span></h1></div>
+    <div class="brand"><canvas id="brand-mark" class="brand-mark" width="12" height="12" aria-hidden="true"></canvas><h1><span class="sr-only">RL RACER</span><canvas id="wordmark" class="wordmark" width="48" height="9" aria-hidden="true"></canvas></h1></div>
     <p id="connection" class="connection" role="status" data-tone="offline">Connecting</p>
   </header>
-  <div class="grid">
+  <nav class="page-tabs" aria-label="Dashboard">
+    <a href="#race" id="race-tab" aria-current="page">Race</a>
+    <a href="#model-system" id="system-tab">Model &amp; System</a>
+  </nav>
+  <div class="grid" id="race-view">
     <div class="main-column">
     <section class="card" aria-labelledby="road-title">
       <header class="card-head"><h2 id="road-title">Live track</h2><small>Chromatic</small></header>
       <div class="track">
-        <canvas id="road" width="760" height="480" aria-label="Live map of the car, obstacles, and rockets"></canvas>
+        <canvas id="road" width="160" height="144" aria-label="Live map of the car, obstacles, and rockets"></canvas>
         <div class="track-note" id="track-note"><div><strong id="track-status">Connecting</strong><p id="track-help"></p></div></div>
       </div>
       <dl class="metrics" aria-label="Race statistics">
         <div><dt>Driver</dt><dd id="driver">—</dd></div>
-        <div><dt>Action</dt><dd id="decision">—</dd></div>
         <div><dt>Hazards cleared</dt><dd id="cleared">0</dd></div>
         <div><dt>Rocket hits</dt><dd id="destroyed">0</dd></div>
         <div><dt>Crashes</dt><dd id="hits">0</dd></div>
@@ -182,24 +269,28 @@ meter::-moz-meter-bar { background: var(--accent); }
     </div>
     <div class="sidebar">
       <section class="card hazard-card" aria-labelledby="hazard-title">
-        <header class="card-head"><h2 id="hazard-title">Place a hazard</h2></header>
+        <header class="card-head">
+          <h2 id="hazard-title">Place a hazard</h2>
+          <button type="button" class="auto-toggle" id="auto-toggle" aria-pressed="false" aria-describedby="auto-help" disabled>Auto mode</button>
+        </header>
         <div class="controls">
+          <p class="auto-help" id="auto-help">Add hazards automatically while the bot drives.</p>
           <div class="hazard chicken">
-            <p id="chicken-label" class="hazard-label">Chicken</p>
+            <p id="chicken-label" class="hazard-label"><canvas class="hazard-icon" data-sprite="chicken" width="8" height="8" aria-hidden="true"></canvas>Chicken</p>
             <div class="buttons" role="group" aria-labelledby="chicken-label">
               <button data-kind="1" aria-keyshortcuts="1" disabled><span>From left →</span> <kbd>1</kbd></button>
               <button data-kind="2" aria-keyshortcuts="2" disabled><span>← From right</span> <kbd>2</kbd></button>
             </div>
           </div>
           <div class="hazard pedestrian">
-            <p id="pedestrian-label" class="hazard-label">Pedestrian</p>
+            <p id="pedestrian-label" class="hazard-label"><canvas class="hazard-icon" data-sprite="pedestrian" width="8" height="8" aria-hidden="true"></canvas>Pedestrian</p>
             <div class="buttons" role="group" aria-labelledby="pedestrian-label">
               <button data-kind="3" aria-keyshortcuts="3" disabled><span>From left →</span> <kbd>3</kbd></button>
               <button data-kind="4" aria-keyshortcuts="4" disabled><span>← From right</span> <kbd>4</kbd></button>
             </div>
           </div>
           <div class="hazard cone">
-            <p id="cone-label" class="hazard-label">Traffic cone</p>
+            <p id="cone-label" class="hazard-label"><canvas class="hazard-icon" data-sprite="cone" width="8" height="8" aria-hidden="true"></canvas>Traffic cone</p>
             <div class="buttons" role="group" aria-labelledby="cone-label">
               <button data-kind="5" aria-keyshortcuts="5" disabled>Left <kbd>5</kbd></button>
               <button data-kind="6" aria-keyshortcuts="6" disabled>Center <kbd>6</kbd></button>
@@ -207,6 +298,16 @@ meter::-moz-meter-bar { background: var(--accent); }
             </div>
           </div>
           <p id="message" class="feedback" role="status">Choose a hazard to place.</p>
+        </div>
+      </section>
+      <section class="card" aria-labelledby="model-hud-title">
+        <header class="card-head"><h2 id="model-hud-title">Model Decisions</h2></header>
+        <div class="model-hud" id="model-hud" data-state="idle">
+          <div class="model-hud-plot" aria-hidden="true"><span class="model-hud-dot"></span></div>
+          <div>
+            <p id="model-readout">Waiting</p>
+            <p id="model-applied" hidden></p>
+          </div>
         </div>
       </section>
       <section class="card" aria-labelledby="queue-title">
@@ -219,12 +320,74 @@ meter::-moz-meter-bar { background: var(--accent); }
       </section>
     </div>
   </div>
+  <div class="system-page" id="system-view" hidden>
+    <section class="card" aria-labelledby="policy-title">
+      <header class="card-head"><h2 id="policy-title">Canyon Racer policy</h2></header>
+      <div class="system-content">
+        <p>RL RACER reuses a Canyon Racer policy trained with PPO. The Jetson gives it a compact text snapshot of the car, road edges, nearby hazards, and previous input. The policy proposes a move, and the game controller can adjust it before sending it back.</p>
+        <dl class="model-facts">
+          <div><dt>Model</dt><dd>LFM2.5-230M</dd></div>
+          <div><dt>Deployed weights</dt><dd>Q8_0 GGUF</dd></div>
+          <div><dt>Inference</dt><dd>llama.cpp on Jetson GPU</dd></div>
+        </dl>
+        <div class="model-links">
+          <a href="https://huggingface.co/aldigobbler/canyon-racer-lfm2-230m-gguf">Trained GGUF ↗</a>
+          <a href="https://huggingface.co/aldigobbler/canyon-racer-lfm2-230m-policy">Policy checkpoint ↗</a>
+          <a href="https://huggingface.co/LiquidAI/LFM2.5-230M">Liquid AI model card ↗</a>
+          <a href="https://github.com/Jacob-Kenney/crispy-happiness/tree/main/canyon-server">Inference source ↗</a>
+        </div>
+      </div>
+    </section>
+    <section class="card" aria-labelledby="system-title">
+      <header class="card-head"><h2 id="system-title">How a move reaches the handheld</h2></header>
+      <div class="system-content">
+        <div class="system-diagram">
+          <section class="system-node">
+            <canvas class="device-art" id="chromatic-art" width="68" height="46" aria-hidden="true"></canvas>
+            <h3>ModRetro Chromatic</h3>
+          </section>
+          <div class="system-wire" aria-label="GameBoy Wi-Fi">
+            <strong>GameBoy Wi-Fi · UDP 47823</strong>
+            <button type="button" class="system-packet" data-flow="snapshot" aria-pressed="true">Race snapshot <span class="packet-direction" aria-hidden="true">→</span><span class="packet-track" aria-hidden="true"></span></button>
+            <button type="button" class="system-packet" data-flow="controls" data-direction="back" aria-pressed="false"><span class="packet-direction" aria-hidden="true">←</span> Controls + hazards<span class="packet-track" aria-hidden="true"></span></button>
+          </div>
+          <section class="system-node">
+            <canvas class="device-art" id="jetson-art" width="68" height="46" aria-hidden="true"></canvas>
+            <h3>Jetson Orin Nano</h3>
+          </section>
+          <div class="system-wire" aria-label="Ethernet">
+            <strong>Ethernet · HTTP 8789</strong>
+            <button type="button" class="system-packet" data-flow="score" aria-pressed="false">State + scores <span class="packet-direction" aria-hidden="true">→</span><span class="packet-track" aria-hidden="true"></span></button>
+            <button type="button" class="system-packet" data-flow="hazard" data-direction="back" aria-pressed="false"><span class="packet-direction" aria-hidden="true">←</span> Hazard request<span class="packet-track" aria-hidden="true"></span></button>
+          </div>
+          <section class="system-node">
+            <canvas class="device-art" id="browser-art" width="68" height="46" aria-hidden="true"></canvas>
+            <h3>Browser dashboard</h3>
+          </section>
+        </div>
+        <p class="system-explanation" aria-live="polite"><strong id="flow-route">Chromatic → Jetson</strong><span id="flow-detail">The handheld sends the car position, road edges, and active hazards while it runs the race locally.</span></p>
+      </div>
+    </section>
+  </div>
 </main>
 <script>
 const byId = id => document.getElementById(id);
+
+function showPage() {
+  const system = location.hash === '#model-system';
+  byId('race-view').hidden = system;
+  byId('system-view').hidden = !system;
+  byId(system ? 'system-tab' : 'race-tab').setAttribute('aria-current', 'page');
+  byId(system ? 'race-tab' : 'system-tab').removeAttribute('aria-current');
+}
+window.addEventListener('hashchange', showPage);
+showPage();
+
 const canvas = byId('road');
 const pen = canvas.getContext('2d');
 const controls = [...document.querySelectorAll('[data-kind]')];
+const autoToggle = byId('auto-toggle');
+let savingAuto = false;
 const clock = new Intl.DateTimeFormat(undefined, { hour:'2-digit', minute:'2-digit', second:'2-digit' });
 const scoreDate = new Intl.DateTimeFormat(undefined, { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
 const scoreNumber = new Intl.NumberFormat();
@@ -357,150 +520,181 @@ const sprites = {
   pedestrian: ['00333000','00323000','00030000','02333200','00333100','00330100','00110100','00220100'],
   cone: ['00033000','00033000','00233200','00233200','03333330','03222330','13333331','11111111'],
 };
-function sprite(rows, palette, x, y) {
+const spritePalettes = {
+  chicken: ['#554338', '#d79045', '#fff1bf'],
+  pedestrian: ['#392f54', '#f4bd96', '#bca3fd'],
+  cone: ['#533045', '#fff1bf', '#f08444'],
+};
+
+const car = [
+  '00111100','01333310','13222231','13222231',
+  '13222231','13333331','13333331','13222231',
+  '13222231','13333331','13333331','13222231',
+  '13222231','13333331','03111130','00111100',
+];
+
+function sprite(rows, palette, x, y, context = pen) {
   rows.forEach((row, dy) => [...row].forEach((ink, dx) => {
     if (ink === '0') return;
-    pen.fillStyle = palette[+ink - 1];
-    pen.fillRect(x + dx, y + dy, 1, 1);
+    context.fillStyle = palette[+ink - 1];
+    context.fillRect(x + dx, y + dy, 1, 1);
   }));
 }
 
-const landscape = document.createElement('canvas');
-landscape.width = 190;
-landscape.height = 120;
-const terrain = landscape.getContext('2d');
-terrain.fillStyle = '#374d32';
-terrain.fillRect(0, 0, landscape.width, landscape.height);
-for (let i = 0; i < 287; i++) {
-  const x = (i * 71.13) % landscape.width;
-  const y = (i * 47.83) % landscape.height;
-  terrain.fillStyle = ['#425b38', '#536343', '#2d412b', '#30462b'][i % 4];
-  terrain.fillRect(x, y, 0.3 + (i % 7) * 0.37, 0.4 + (i % 3) * 0.37);
-}
-const grass = pen.createPattern(landscape, 'repeat');
-
-function oval(x, y, rx, ry, color) {
-  pen.fillStyle = color;
-  pen.beginPath();
-  pen.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
-  pen.fill();
-}
-
-function drawCar(x, y, crashed) {
-  pen.save();
-  pen.translate(x + 4.5, y);
-  oval(1, 9, 6.4, 9.6, '#11171291');
-  pen.fillStyle = '#151b19';
-  for (const ax of [-5, 3.5]) {
-    pen.fillRect(ax, 2.4, 1.5, 3.5);
-    pen.fillRect(ax, 11.1, 1.5, 3.5);
+// Devices use the same integer-pixel drawing style as the track and sprites.
+function paintDevice(id, rectangles) {
+  const context = byId(id).getContext('2d');
+  for (const [color, x, y, width, height] of rectangles) {
+    context.fillStyle = color;
+    context.fillRect(x, y, width, height);
   }
-  const paint = pen.createLinearGradient(-4.5, 0, 4.5, 0);
-  paint.addColorStop(0, crashed ? '#7a4428' : '#8a2f2b');
-  paint.addColorStop(.45, crashed ? '#f4ab59' : '#d25748');
-  paint.addColorStop(1, crashed ? '#a65d33' : '#ad3d34');
-  pen.fillStyle = paint;
-  pen.beginPath();
-  pen.roundRect(-4.4, 0, 8.8, 16, [2, 2, 1.7, 1.7]);
-  pen.fill();
-  pen.fillStyle = '#27343a';
-  pen.beginPath();
-  pen.moveTo(-3.3, 4.6);
-  pen.lineTo(3.3, 4.6);
-  pen.lineTo(2.6, 7.4);
-  pen.lineTo(-2.6, 7.4);
-  pen.closePath();
-  pen.fill();
-  pen.fillRect(-2.6, 10.3, 5.2, 2.5);
-  pen.fillStyle = '#61797f';
-  pen.fillRect(-2.5, 4.8, 4.9, .55);
-  pen.fillStyle = '#fff1b2';
-  pen.fillRect(-3.6, 1.1, 1.6, .75);
-  pen.fillRect(2, 1.1, 1.6, .75);
-  pen.fillStyle = '#ffb38c';
-  pen.fillRect(-3.7, 14.1, 1.7, .85);
-  pen.fillRect(2, 14.1, 1.7, .85);
-  pen.restore();
 }
+
+const deviceInk = '#222339';
+paintDevice('chromatic-art', [
+  ['#c4b5dc', 16, 40, 42, 4], [deviceInk, 19, 2, 30, 42],
+  [deviceInk, 16, 5, 36, 34], ['#f79462', 19, 5, 30, 34],
+  ['#ffcc55', 19, 5, 30, 4], ['#b85b48', 19, 36, 30, 5],
+  [deviceInk, 23, 10, 22, 16], ['#bae28d', 25, 12, 18, 12],
+  ['#5b7257', 30, 12, 8, 12], ['#fff8e8', 33, 12, 1, 3],
+  ['#fff8e8', 33, 18, 1, 3], ['#fa7c67', 32, 19, 3, 4],
+  [deviceInk, 24, 28, 3, 9], [deviceInk, 21, 31, 9, 3],
+  [deviceInk, 36, 32, 4, 4], [deviceInk, 43, 29, 4, 4],
+  ['#d1c2f4', 36, 32, 3, 3], ['#d1c2f4', 43, 29, 3, 3],
+]);
+paintDevice('jetson-art', [
+  ['#c4b5dc', 7, 39, 58, 4], [deviceInk, 5, 13, 57, 27],
+  ['#52775d', 7, 15, 53, 21], ['#b8d68a', 9, 17, 43, 16],
+  [deviceInk, 20, 10, 27, 23], ['#4c5267', 22, 12, 23, 18],
+  ...Array.from({ length: 5 }, (_, i) => [deviceInk, 23 + i * 4, 13, 2, 16]),
+  ['#e5ddc5', 49, 18, 13, 7], ['#e5ddc5', 49, 27, 13, 7],
+  [deviceInk, 57, 20, 5, 3], [deviceInk, 57, 29, 5, 3],
+  ['#f5db6f', 9, 30, 7, 3], ['#e2e0bf', 10, 19, 5, 4],
+]);
+paintDevice('browser-art', [
+  ['#c4b5dc', 4, 38, 61, 4], [deviceInk, 9, 5, 50, 31],
+  ['#d1c2f4', 12, 8, 44, 25], ['#fff8e8', 14, 10, 40, 21],
+  ['#ffcc55', 14, 10, 40, 5], [deviceInk, 16, 12, 2, 1],
+  ['#52775d', 16, 17, 19, 12], [deviceInk, 22, 17, 7, 12],
+  ['#ffcc55', 25, 17, 1, 3], ['#ffcc55', 25, 23, 1, 3],
+  ['#ee6957', 24, 24, 3, 4], ['#864fb0', 38, 18, 13, 2],
+  ['#52775d', 38, 23, 10, 2], ['#864fb0', 38, 27, 13, 2],
+  [deviceInk, 4, 36, 60, 4], ['#a592bf', 7, 36, 54, 2],
+]);
+
+const packetDetails = {
+  snapshot: ['Chromatic → Jetson', 'The handheld sends the car position, road edges, and active hazards while it runs the race locally.'],
+  controls: ['Jetson → Chromatic', 'In BOT mode, the Jetson checks the GPU policy’s proposed move and returns controls. It also sends queued hazards in both driver modes.'],
+  score: ['Jetson → Browser', 'The dashboard reads race snapshots, model decisions, and leaderboard scores from the Jetson.'],
+  hazard: ['Browser → Jetson', 'A hazard button sends a placement request to the Jetson. The Jetson queues it for the handheld.'],
+};
+const packetButtons = [...document.querySelectorAll('[data-flow]')];
+for (const button of packetButtons) {
+  button.addEventListener('click', () => {
+    const [route, detail] = packetDetails[button.dataset.flow];
+    for (const packet of packetButtons) packet.setAttribute('aria-pressed', String(packet === button));
+    byId('flow-route').textContent = route;
+    byId('flow-detail').textContent = detail;
+  });
+}
+
+function drawWordmark() {
+  const letters = {
+    R: ['11110','11001','11110','11010','11001','11001','11001'],
+    L: ['11000','11000','11000','11000','11000','11000','11111'],
+    A: ['01110','11001','11001','11111','11001','11001','11001'],
+    C: ['01111','11000','11000','11000','11000','11000','01111'],
+    E: ['11111','11000','11110','11000','11000','11000','11111'],
+  };
+  const context = byId('wordmark').getContext('2d');
+  [...'RL RACER'].forEach((letter, index) => {
+    const glyph = letters[letter];
+    if (glyph) {
+      sprite(glyph, ['#f69862'], index * 6 + 1, 2, context);
+      sprite(glyph, ['#222339'], index * 6, 1, context);
+    }
+  });
+}
+
+drawWordmark();
+const mark = byId('brand-mark').getContext('2d');
+mark.fillStyle = '#222339';
+mark.fillRect(0, 0, 12, 12);
+sprite([
+  '000111000','001111100','021333120','021333120','001111100',
+  '001111100','021333120','021111120','001000100',
+], ['#fa7c67','#ffcc55','#91a8ca'], 2, 1, mark);
+for (const icon of document.querySelectorAll('[data-sprite]')) {
+  sprite(sprites[icon.dataset.sprite], spritePalettes[icon.dataset.sprite], 0, 0, icon.getContext('2d'));
+}
+
+let crashFrameDrawn = false;
 
 function draw() {
+  // Paint the impact once, then hold the scene while crash telemetry continues.
+  if (state.crashed && crashFrameDrawn) return;
+  crashFrameDrawn = Boolean(state.crashed);
+
   const profile = state.roadProfile?.length ? state.roadProfile : [
     {y:0,left:66}, {y:37,left:70}, {y:85,left:state.road || 76}, {y:143,left:72}
   ];
   const leftEdges = [];
   let sample = 0;
-  for (let y = 0; y <= 144; y++) {
+  const scroll = (state.frame || 0) * 2;
+  pen.fillStyle = '#435739';
+  pen.fillRect(0, 0, 160, 144);
+  for (let y = 0; y < 144; y++) {
     while (sample + 1 < profile.length && y >= profile[sample + 1].y) sample++;
     const a = profile[sample];
     const b = profile[sample + 1];
-    const t = b && b.y > a.y ? Math.max(0, (y - a.y) / (b.y - a.y)) : 0;
-    leftEdges.push(a.left - 8 + (b ? (b.left - a.left) * t : 0));
+    const mix = b && b.y > a.y ? Math.max(0, (y - a.y) / (b.y - a.y)) : 0;
+    const left = Math.round(a.left - 8 + (b ? (b.left - a.left) * mix : 0));
+    leftEdges.push(left);
+    const stripe = (y - scroll) & 15;
+    for (let x = (stripe * 11) % 17; x < 160; x += 17) {
+      pen.fillStyle = stripe & 1 ? '#506440' : '#384b33';
+      pen.fillRect(x, y, stripe % 3 === 0 ? 2 : 1, 1);
+    }
+    pen.fillStyle = '#a08756';
+    pen.fillRect(left - 3, y, 38, 1);
+    pen.fillStyle = '#343344';
+    pen.fillRect(left, y, 32, 1);
+    pen.fillStyle = '#514956';
+    if (stripe % 3 === 0) pen.fillRect(left + 2 + ((stripe * 11) % 27), y, 1, 1);
+    pen.fillStyle = '#e7d4b2';
+    pen.fillRect(left, y, 1, 1);
+    pen.fillRect(left + 31, y, 1, 1);
+    if (stripe < 7) {
+      pen.fillStyle = '#ffcd65';
+      pen.fillRect(left + 15, y, 2, 1);
+    }
   }
-  const scroll = state.frame || 0;
-  const drift = (scroll % 60) * 2;
-  pen.setTransform(canvas.width / 160, 0, 0, canvas.height / 144, 0, 0);
-  pen.fillStyle = '#374d32';
-  pen.fillRect(0, 0, 160, 144);
-  pen.save();
-  pen.translate(0, drift);
-  pen.fillStyle = grass;
-  pen.fillRect(0, -drift, 160, 144);
-  pen.restore();
-
-  function ribbon(offset, width, color, first = 0, last = 144) {
-    pen.fillStyle = color;
-    pen.beginPath();
-    pen.moveTo(leftEdges[first] + offset, first);
-    for (let y = first + 1; y <= last; y++) pen.lineTo(leftEdges[y] + offset, y);
-    for (let y = last; y >= first; y--) pen.lineTo(leftEdges[y] + offset + width, y);
-    pen.closePath();
-    pen.fill();
-  }
-
-  ribbon(-6, 44, '#263723');
-  ribbon(-4, 40, '#7d7455');
-  ribbon(0, 32, '#3e423d');
-  for (let i = 0; i < 143; i++) {
-    const y = (i * 17 + scroll * 2) % 144;
-    const x = leftEdges[y] + (i * 43 % 38) - 3;
-    pen.fillStyle = i % 2 ? '#7c7b6a5c' : '#22262070';
-    pen.fillRect(x, y, .5 + (i % 3) * .35, .36);
-  }
-  ribbon(0, .9, '#dcdcc3');
-  ribbon(31.1, .9, '#dcdcc3');
-  for (let top = (scroll * 2 % 24) - 24; top < 144; top += 24) {
-    if (top + 10 > 0) ribbon(15.35, 1.3, '#f2c35f', Math.max(top, 0), Math.min(top + 10, 144));
-  }
-  for (let i = 0; i < 23; i++) {
+  for (let i = 0; i < 19; i++) {
     const x = i * 43 % 160;
-    const y = (i * 19 + (scroll * 2) % 144) % 144;
+    const y = (i * 19 + scroll) % 144;
     if (x > leftEdges[y] - 11 && x < leftEdges[y] + 43) continue;
-    oval(x + 2, y + 1, 3.5, 1.6, '#21302292');
-    oval(x, y, 2.5, 2.15, '#2b412b');
-    oval(x - .5, y - .5, 1.45, 1.1, '#5c7948');
+    sprite(['00100','01110','11211','01210','00100'], ['#2c4332','#7b8b4f'], x, y);
   }
-
   for (const hazard of state.obstacles || []) {
-    const x = hazard.left - 8;
-    oval(x + 4.5, hazard.y + 7, 4.2, 1.65, '#1c2119a6');
-    if (hazard.kind >= 5) sprite(sprites.cone, ['#5c371b','#ffefce','#ff9f63'], x, hazard.y);
-    else if (hazard.kind >= 3) sprite(sprites.pedestrian, ['#6352a1','#fff1ce','#bfb2ff'], x, hazard.y);
-    else sprite(sprites.chicken, ['#af7242','#ffb765','#ffdf9d'], x, hazard.y);
+    const kind = hazard.kind >= 5 ? 'cone' : hazard.kind >= 3 ? 'pedestrian' : 'chicken';
+    sprite(sprites[kind], spritePalettes[kind], hazard.left - 8, hazard.y);
   }
   if (state.rocket) {
     const {x, y} = state.rocket;
-    oval(x - 8, y + 3, 2.1, 5, '#ff8b3b70');
-    oval(x - 8, y, .95, 3.1, '#ffeeae');
+    sprite(['010','111','121','020','020','030'], ['#fff1bf','#ffab53','#f06449'], x - 9, y - 2);
   }
   if (state.splatter) {
     const {x, y, frames, kind} = state.splatter;
-    const color = kind === 2 ? '#fff0d3' : kind === 3 ? '#ffd24e' : '#ff726b';
+    pen.fillStyle = kind === 2 ? '#fff0d3' : kind === 3 ? '#ffd24e' : '#ff726b';
     const spread = frames > 17 ? 0 : 2;
     for (const [dx, dy] of [[0,2],[6,0],[7,5],[1,7],[5,7]]) {
-      oval(x - 8 + dx + (dx < 4 ? -spread : spread), y + dy, .8, .7, color);
+      pen.fillRect(x - 8 + dx + (dx < 4 ? -spread : spread), y + dy, 1, 1);
     }
   }
-  if (state.car && state.playing) drawCar(state.car.x, state.car.y + 5, state.crashed);
+  if (state.car && state.playing) {
+    const palette = state.crashed ? ['#503244','#b7704a','#ffba68'] : ['#222339','#667c9f','#ee6957'];
+    sprite(car, palette, state.car.x, state.car.y + 5);
+  }
 }
 
 function showLists() {
@@ -543,6 +737,34 @@ function showLists() {
   }
 }
 
+const modelMoves = {
+  left: {label: '← Left', x: -22, y: 0},
+  right: {label: 'Right →', x: 22, y: 0},
+  up: {label: '↑ Up', x: 0, y: -22},
+  down: {label: '↓ Down', x: 0, y: 22},
+  a: {label: 'Fire', x: 0, y: -15},
+  wait: {label: 'Hold', x: 0, y: 0},
+};
+
+function renderModelHud() {
+  const hud = byId('model-hud');
+  const idle = !state.connected ? 'Waiting' : state.paused ? 'Paused' : !state.playing ? 'Ready'
+    : state.crashed ? 'Crash' : state.manual ? 'You drive' : state.modelError ? 'No signal' : '';
+  const move = !idle && Object.hasOwn(modelMoves, state.modelAction) ? modelMoves[state.modelAction] : null;
+  const label = move?.label || idle || 'Waiting';
+  const readout = byId('model-readout');
+  if (readout.textContent !== label) readout.textContent = label;
+  hud.dataset.state = move ? (state.modelAction === 'a' ? 'fire' : 'live') : 'idle';
+  hud.style.setProperty('--model-x', (move?.x ?? 0) + 'px');
+  hud.style.setProperty('--model-y', (move?.y ?? 0) + 'px');
+
+  const applied = byId('model-applied');
+  const proposed = state.modelAction === 'a' ? 'fire' : state.modelAction;
+  const command = move && state.decision !== proposed ? actions[state.decision] : null;
+  applied.hidden = !command;
+  if (command && applied.textContent !== 'Sent: ' + command) applied.textContent = 'Sent: ' + command;
+}
+
 function render() {
   const connection = byId('connection');
   const mode = state.manual ? 'You' : 'Bot';
@@ -551,25 +773,53 @@ function render() {
   if (connection.textContent !== status) connection.textContent = status;
   connection.dataset.tone = !state.connected ? 'offline' : state.paused || (!state.manual && state.modelError) ? 'hold' : 'live';
   byId('driver').textContent = state.connected ? mode : '—';
-  byId('decision').textContent = state.paused ? 'Paused' : !state.playing ? '—'
-    : state.crashed ? 'Crash' : state.manual ? 'Manual' : actions[state.decision] || '—';
   for (const metric of ['cleared','hits','destroyed']) byId(metric).textContent = state[metric] ?? '0';
 
   byId('track-note').hidden = Boolean(state.playing && !state.paused);
   byId('track-status').textContent = lost ? 'Jetson offline' : !state.connected ? 'Waiting for Chromatic'
     : state.paused ? 'Race paused' : 'Ready to race';
   byId('track-help').textContent = lost ? 'Reconnecting to the control panel.'
-    : !state.connected ? 'Launch Road Racer Versus on the handheld.'
+    : !state.connected ? 'Launch RL RACER on the handheld.'
     : state.paused ? mode + ' drives next. Press START on the Chromatic.' : 'Press START on the Chromatic.';
   updateControls();
   showLists();
   draw();
+  renderModelHud();
 }
 
 function updateControls() {
   const disabled = posting || !state.playing || state.paused || (state.queue?.length ?? 0) >= 6;
   for (const button of controls) button.disabled = disabled;
+  autoToggle.disabled = savingAuto || lost || state.auto === undefined;
+  autoToggle.setAttribute('aria-pressed', String(Boolean(state.auto)));
+  const help = state.auto && state.manual ? 'Waiting for BOT mode. On the Chromatic, press START, SELECT, then START.'
+    : state.auto && state.paused ? 'Ready when the race resumes on the Chromatic.'
+    : state.auto && !state.connected ? 'Waiting for the Chromatic to connect.'
+    : state.auto ? 'On. The Jetson adds hazards while the bot drives.' : 'Add hazards automatically while the bot drives.';
+  if (byId('auto-help').textContent !== help) byId('auto-help').textContent = help;
 }
+
+autoToggle.addEventListener('click', async () => {
+  if (autoToggle.disabled) return;
+  savingAuto = true;
+  updateControls();
+  try {
+    const response = await fetch('/auto/' + (state.auto ? 'off' : 'on'), {
+      method: 'PUT', headers: {'X-Road-Racer':'1'}, signal: AbortSignal.timeout(2500),
+    });
+    if (!response.ok) throw new Error('Auto mode update failed');
+    const { auto } = await response.json();
+    await refresh();
+    state.auto = auto;
+  } catch {
+    const message = byId('message');
+    message.textContent = 'Could not change Auto mode. Try again.';
+    message.dataset.error = 'true';
+  } finally {
+    savingAuto = false;
+    updateControls();
+  }
+});
 
 async function refresh() {
   if (request) return request;
@@ -614,6 +864,7 @@ async function place(button) {
 
 for (const button of controls) button.addEventListener('click', () => place(button));
 window.addEventListener('keydown', event => {
+  if (byId('race-view').hidden) return;
   if (event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
       event.target.closest?.('input,textarea,select,[contenteditable]')) return;
   const button = controls.find(control => control.dataset.kind === event.key);

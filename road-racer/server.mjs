@@ -15,6 +15,8 @@ const hazards = ['', 'Chicken from left', 'Chicken from right', 'Pedestrian from
   'Pedestrian from right', 'Cone in left lane', 'Cone in center lane', 'Cone in right lane'];
 const queue = [];
 let id = 0;
+let auto = false;
+let nextAutoHazardAt = 0;
 let latest = null;
 let menuPressAt = -Infinity;
 let inFlight = false;
@@ -108,6 +110,30 @@ function trackRace(state, manual, packet, now) {
 function recordEvent(type, label, at) {
   activity.unshift({ id: ++eventId, type, label, at });
   if (activity.length > 8) activity.pop();
+}
+
+function enqueueHazard(kind, source) {
+  id = id % 65535 + 1;
+  if (id === latest.ack) id = id % 65535 + 1;
+  queue.push({ kind, id, source });
+}
+
+function resetAutoHazards() {
+  nextAutoHazardAt = 0;
+  const index = queue.findIndex(hazard => hazard.source === 'auto');
+  if (index !== -1) queue.splice(index, 1);
+}
+
+function scheduleAutoHazard(state, manual, crashed, phase, now) {
+  if (!auto || manual || !state.playing || state.paused || crashed || phase !== 4) {
+    resetAutoHazards();
+    return;
+  }
+  if (!nextAutoHazardAt) nextAutoHazardAt = now + 2000;
+  if (now < nextAutoHazardAt || queue.length) return;
+  if (state.obstacles.filter(obstacle => !(obstacle.type & 128)).length >= 2) return;
+  enqueueHazard(1 + Math.floor(Math.random() * (hazards.length - 1)), 'auto');
+  nextAutoHazardAt = now + 2500 + Math.random() * 1500;
 }
 
 function formatObservation(state, packet) {
@@ -213,6 +239,7 @@ udp.on('message', async (packet, peer) => {
     recordEvent('placed', lastPlaced, now);
     console.log(JSON.stringify({event:'placed', hazard:lastPlaced, at:now}));
   }
+  scheduleAutoHazard(state, manual, crashed, packet[62], now);
   let action = 'wait';
   if (state.paused || manual) {
     modelAction = null;
@@ -303,7 +330,7 @@ const http = createServer((req, res) => {
   if (req.method === 'GET' && req.url === '/state') {
     return res.end(JSON.stringify({ connected: !!connected, playing: Boolean(connected && latest.state.playing),
       manual: Boolean(connected && latest.manual), paused: Boolean(connected && latest.state.paused),
-      decision, modelAction, modelError, checks, hits, lastPlaced, queue:queue.map(event => hazards[event.kind]),
+      decision, modelAction, modelError, checks, hits, lastPlaced, auto, queue:queue.map(event => hazards[event.kind]),
       car: connected ? latest.state.ship : null, road: latest?.road,
       roadProfile: connected && latest.state.playing ? latest.roadProfile : [],
       frame: connected ? latest.state.frame : 0, crashed: connected && lastCrash, activity, leaderboard,
@@ -311,6 +338,12 @@ const http = createServer((req, res) => {
       rocket: connected ? latest.rocket : null, destroyed: latest?.destroyed || 0,
       splatter: connected ? latest.splatter : null,
       cleared: connected ? Math.floor(latest.state.score / 10) : 0 }));
+  }
+  if (req.method === 'PUT' && (req.url === '/auto/on' || req.url === '/auto/off') &&
+      req.headers['x-road-racer'] === '1') {
+    auto = req.url === '/auto/on';
+    if (!auto) resetAutoHazards();
+    return res.end(JSON.stringify({ auto }));
   }
   if (req.method === 'POST' && /^\/hazards\/[1-7]$/.test(req.url) &&
       req.headers['x-road-racer'] === '1') {
@@ -320,9 +353,7 @@ const http = createServer((req, res) => {
         latest?.state.paused && connected ? 'Resume on the Chromatic to place hazards' : 'Waiting for the Chromatic' }));
     }
     const kind = Number(req.url.at(-1));
-    id = id % 65535 + 1;
-    if (id === latest.ack) id = id % 65535 + 1;
-    queue.push({ kind, id });
+    enqueueHazard(kind, 'manual');
     return res.end(JSON.stringify({ queued: hazards[kind] }));
   }
   res.statusCode = 404;
