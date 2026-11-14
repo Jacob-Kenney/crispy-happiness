@@ -1,0 +1,4 @@
+torch>=2.15
+transformers>=5.2
+numpy
+peft>=0.21

@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+canyon_rl/cpp/build/
+canyon_rl/cpp/*.dylib
+canyon_rl/cpp/*.so
+canyon-server/models/
+runs/

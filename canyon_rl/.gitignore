@@ -1,0 +1,6 @@
+__pycache__/
+runs/
+*.pt
+cpp/libcanyon_env.dylib
+cpp/libcanyon_env.so
+cpp/build/

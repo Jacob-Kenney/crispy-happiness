@@ -1,0 +1,7 @@
+{
+  "appId": "canyon-input-test",
+  "version": "1.0.0",
+  "env": {"CHROMATIC_IP": "10.42.0.60"},
+  "entitlements": [{"type": "network", "mode": "host"}, {"type": "http", "port": 8787}],
+  "readiness": {"tcpSocket": {"port": 8787}, "timeoutSeconds": 30}
+}

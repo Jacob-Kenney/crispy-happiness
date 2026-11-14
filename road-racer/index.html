@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111411">
+<title>Road Racer Versus</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #111411;
+  --panel: #1a1e19;
+  --inset: #151914;
+  --line: #353c32;
+  --muted: #a9b1a4;
+  --ink: #f2f3e9;
+  --accent: #dcf981;
+  --amber: #ffc580;
+  --red: #ff9283;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  font: 15px "Inter", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at top, #21271c, transparent 64%); }
+h1, h2, p, dl, dd, ol { margin: 0; }
+main { width: min(1360px, calc(100% - 72px)); margin: auto; padding: 28px 0 36px; }
+.masthead { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-bottom: 21px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 13px; }
+.brand-mark { flex: none; width: 43px; height: 43px; border-radius: 10px; background: var(--accent); display: grid; place-items: center; }
+.brand-mark::before { content: ""; width: 20px; height: 22px; transform: skewX(-15deg); background: repeating-linear-gradient(90deg, #202819 0 4px, transparent 4px 8px); }
+h1 { font-size: clamp(24px, 3vw, 39px); font-weight: 800; letter-spacing: -.037em; line-height: 1; }
+h1 span { color: #c1c8b7; font-weight: 500; }
+h2 { font-size: 18px; font-weight: 700; letter-spacing: -.025em; }
+.connection { display: flex; align-items: center; gap: 8px; background: var(--inset); border: 1px solid var(--line); border-radius: 7px; padding: 9px 11px; font: 11px var(--mono); white-space: nowrap; }
+.connection::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.connection[data-tone="live"] { color: var(--accent); }
+.connection[data-tone="live"]::before { box-shadow: 0 0 11px #cfe77880; }
+.connection[data-tone="hold"] { color: var(--amber); }
+.connection[data-tone="offline"] { color: var(--muted); }
+.grid { display: grid; grid-template-columns: minmax(0,1.85fr) minmax(290px,1fr); gap: 18px; align-items: start; margin-top: 19px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; min-width: 0; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 17px; min-height: 51px; }
+.card-head small, .queue-meter { font: 11px var(--mono); color: var(--muted); }
+.track { position: relative; background: #202c1f; overflow: hidden; }
+#road { width: 100%; display: block; aspect-ratio: 760 / 480; }
+.track-note { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 20px; background: #10150e91; pointer-events: none; }
+.track-note[hidden] { display: none; }
+.track-note div { background: #1a2119; border: 1px solid #4a5544; border-radius: 10px; padding: 16px 24px; }
+.track-note strong { font-size: clamp(19px,3vw,30px); letter-spacing: -.045em; }
+.track-note p { color: var(--muted); margin-top: 5px; font-size: 13px; }
+.metrics { display: grid; grid-template-columns: 1fr 1fr repeat(3, .9fr); }
+.metrics div { min-width: 0; padding: 12px 15px; border-right: 1px solid var(--line); }
+.metrics div:last-child { border-right: 0; }
+dt { font: 10px var(--mono); text-transform: uppercase; letter-spacing: .075em; color: var(--muted); }
+dd { font: 650 clamp(17px,2vw,25px) var(--mono); margin-top: 4px; line-height: 1.1; }
+#driver { color: var(--accent); }
+#destroyed { color: var(--amber); }
+#hits { color: var(--red); }
+.sidebar { display: grid; gap: 14px; }
+.hazard-card .card-head { border-bottom: 1px solid var(--line); }
+.controls { padding: 2px 16px 11px; }
+.hazard { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.hazard-label { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-weight: 650; font-size: 13px; }
+.hazard-label::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--tone); }
+.chicken { --tone: #efe3ac; }
+.pedestrian { --tone: #c1b2ff; }
+.cone { --tone: #ffb37c; }
+.buttons { display: grid; grid-auto-columns: minmax(0,1fr); grid-auto-flow: column; gap: 7px; }
+button { border: 1px solid #485144; border-radius: 6px; background: #252c22; color: var(--ink); font: 600 12px "Inter", system-ui, sans-serif; cursor: pointer; }
+.buttons button { display: flex; justify-content: space-between; align-items: center; gap: 4px; padding: 7px 10px; min-height: 38px; }
+button:hover:not(:disabled) { background: #333e2d; border-color: var(--tone, var(--accent)); }
+button:active:not(:disabled) { background: #414d36; }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+kbd { font: 10px var(--mono); color: #cdd3c7; border-radius: 4px; border: 1px solid #5a6355; padding: 1px 4px; }
+.feedback { padding-top: 9px; min-height: 25px; font-size: 12px; color: var(--accent); }
+.feedback[data-error="true"] { color: var(--red); }
+.queue-meter { display: flex; gap: 8px; align-items: center; }
+meter { width: 60px; height: 8px; appearance: none; }
+meter::-webkit-meter-bar { background: var(--inset); border: 1px solid var(--line); }
+meter::-webkit-meter-optimum-value { background: var(--accent); }
+meter::-moz-meter-bar { background: var(--accent); }
+.queue-list, .feed-list { list-style: none; padding: 0 16px 12px; }
+.queue-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.queue-list li { font: 11px var(--mono); padding: 5px 7px; border: 1px solid var(--line); border-radius: 5px; }
+.queue-list li:first-child:not(.empty) { color: var(--accent); border-color: #617048; }
+.queue-list li.empty, .feed-list li.empty { color: var(--muted); border: 0; padding: 1px 0 3px; }
+.feed-list li { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; border-top: 1px solid var(--line); padding: 8px 0; font-size: 12px; }
+.feed-list li:not(.empty)::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.feed-list li[data-type="rocket"]::before, .feed-list li[data-type="impact"]::before { background: var(--amber); }
+.feed-list li[data-type="crash"]::before { background: var(--red); }
+.feed-list li span { flex: 1; }
+.feed-list time { color: var(--muted); font: 10px var(--mono); flex: none; }
+.main-column { display: grid; gap: 14px; min-width: 0; }
+.leaderboard .card-head { flex-wrap: wrap; }
+.leaderboard label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+.leaderboard select { min-height: 34px; max-width: 100%; border: 1px solid #485144; border-radius: 6px; background: #252c22; color: var(--ink); padding: 0 8px; font: inherit; }
+.leaderboard table { width: 100%; border-collapse: collapse; }
+.leaderboard th, .leaderboard td { padding: 9px 16px; text-align: left; border-top: 1px solid var(--line); }
+.leaderboard th { font: 10px var(--mono); color: var(--muted); text-transform: uppercase; }
+.leaderboard td { font-size: 13px; }
+.leaderboard th:nth-child(3), .leaderboard td:nth-child(3) { text-align: right; }
+.leaderboard td:nth-child(1), .leaderboard td:nth-child(3) { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.leaderboard tr:first-child td:nth-child(3) { color: var(--accent); font-weight: 700; }
+.leaderboard td:last-child, .leaderboard th:last-child { text-align: right; white-space: nowrap; }
+.leaderboard .empty-score { color: var(--muted); text-align: left; }
+.player-name { display: block; max-width: 100%; min-height: 28px; padding: 2px 0; border: 0; background: transparent; text-align: left; overflow-wrap: anywhere; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.player-name:hover:not(:disabled) { background: transparent; color: var(--ink); }
+.leaderboard td:nth-child(2) { width: 48%; }
+.player-mode { display: block; font-size: 11px; color: var(--muted); }
+.player-edit { display: flex; flex-wrap: wrap; gap: 5px; }
+.player-edit input { width: 100%; min-width: 0; min-height: 30px; padding: 4px 6px; border: 1px solid #647253; border-radius: 5px; color: var(--ink); background: var(--inset); font: inherit; }
+.player-edit button, .score-pages button { padding: 4px 8px; min-height: 28px; }
+.player-edit p { flex-basis: 100%; color: var(--red); font-size: 11px; }
+.score-pages { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-top: 1px solid var(--line); }
+.score-pages[hidden] { display: none; }
+.score-pages span { color: var(--muted); font: 11px var(--mono); }
+.score-note { padding: 0 16px 10px; color: var(--muted); font-size: 12px; }
+@media (max-width: 900px) {
+  main { width: calc(100% - 36px); }
+  .grid { grid-template-columns: minmax(0,1.3fr) minmax(276px,1fr); }
+  .metrics div { padding-inline: 9px; }
+}
+@media (max-width: 690px) {
+  main { width: calc(100% - 24px); padding-top: 17px; }
+  .masthead { flex-wrap: wrap; gap: 10px; padding-bottom: 14px; }
+  .grid { grid-template-columns: 1fr; gap: 12px; margin-top: 13px; }
+  .metrics { grid-template-columns: repeat(3,1fr); }
+  .metrics div:nth-child(-n+3) { border-bottom: 1px solid var(--line); }
+  .metrics div:nth-child(3) { border-right: 0; }
+  .metrics div:last-child { grid-column: span 2; }
+  .main-column { display: contents; }
+  .leaderboard { grid-row: 3; }
+  .leaderboard th, .leaderboard td { padding-inline: 10px; }
+}
+@media (pointer: coarse) { kbd { display: none; } .buttons button { min-height: 44px; } }
+</style>
+</head>
+<body>
+<main>
+  <header class="masthead">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span><h1>Road Racer <span>Versus</span></h1></div>
+    <p id="connection" class="connection" role="status" data-tone="offline">Connecting</p>
+  </header>
+  <div class="grid">
+    <div class="main-column">
+    <section class="card" aria-labelledby="road-title">
+      <header class="card-head"><h2 id="road-title">Live track</h2><small>Chromatic</small></header>
+      <div class="track">
+        <canvas id="road" width="760" height="480" aria-label="Live map of the car, obstacles, and rockets"></canvas>
+        <div class="track-note" id="track-note"><div><strong id="track-status">Connecting</strong><p id="track-help"></p></div></div>
+      </div>
+      <dl class="metrics" aria-label="Race statistics">
+        <div><dt>Driver</dt><dd id="driver">—</dd></div>
+        <div><dt>Action</dt><dd id="decision">—</dd></div>
+        <div><dt>Hazards cleared</dt><dd id="cleared">0</dd></div>
+        <div><dt>Rocket hits</dt><dd id="destroyed">0</dd></div>
+        <div><dt>Crashes</dt><dd id="hits">0</dd></div>
+      </dl>
+    </section>
+    <section class="card leaderboard" aria-labelledby="leaderboard-title">
+      <header class="card-head">
+        <h2 id="leaderboard-title">Leaderboard</h2>
+        <label>Driver <select id="score-filter">
+          <option value="">All drivers</option>
+          <option>You</option>
+          <option>Bot</option>
+          <option>Mixed</option>
+        </select></label>
+      </header>
+      <p class="score-note">Click a player name to edit it.</p>
+      <table aria-labelledby="leaderboard-title">
+        <thead><tr><th scope="col">Rank</th><th scope="col">Player</th><th scope="col">Score</th><th scope="col">Finished</th></tr></thead>
+        <tbody id="scores"><tr><td class="empty-score" colspan="4">Waiting for the leaderboard…</td></tr></tbody>
+      </table>
+      <div class="score-pages" id="score-pages" hidden>
+        <button id="score-prev" type="button">Previous</button><span id="score-page"></span><button id="score-next" type="button">Next</button>
+      </div>
+    </section>
+    </div>
+    <div class="sidebar">
+      <section class="card hazard-card" aria-labelledby="hazard-title">
+        <header class="card-head"><h2 id="hazard-title">Place a hazard</h2></header>
+        <div class="controls">
+          <div class="hazard chicken">
+            <p id="chicken-label" class="hazard-label">Chicken</p>
+            <div class="buttons" role="group" aria-labelledby="chicken-label">
+              <button data-kind="1" aria-keyshortcuts="1" disabled><span>From left →</span> <kbd>1</kbd></button>
+              <button data-kind="2" aria-keyshortcuts="2" disabled><span>← From right</span> <kbd>2</kbd></button>
+            </div>
+          </div>
+          <div class="hazard pedestrian">
+            <p id="pedestrian-label" class="hazard-label">Pedestrian</p>
+            <div class="buttons" role="group" aria-labelledby="pedestrian-label">
+              <button data-kind="3" aria-keyshortcuts="3" disabled><span>From left →</span> <kbd>3</kbd></button>
+              <button data-kind="4" aria-keyshortcuts="4" disabled><span>← From right</span> <kbd>4</kbd></button>
+            </div>
+          </div>
+          <div class="hazard cone">
+            <p id="cone-label" class="hazard-label">Traffic cone</p>
+            <div class="buttons" role="group" aria-labelledby="cone-label">
+              <button data-kind="5" aria-keyshortcuts="5" disabled>Left <kbd>5</kbd></button>
+              <button data-kind="6" aria-keyshortcuts="6" disabled>Center <kbd>6</kbd></button>
+              <button data-kind="7" aria-keyshortcuts="7" disabled>Right <kbd>7</kbd></button>
+            </div>
+          </div>
+          <p id="message" class="feedback" role="status">Choose a hazard to place.</p>
+        </div>
+      </section>
+      <section class="card" aria-labelledby="queue-title">
+        <header class="card-head"><h2 id="queue-title">Hazard queue</h2><div class="queue-meter"><meter id="queue-meter" value="0" min="0" max="6" aria-label="Queue capacity"></meter><span id="queue-count">0 / 6</span></div></header>
+        <ol class="queue-list" id="queue"><li class="empty">No hazards queued</li></ol>
+      </section>
+      <section class="card" aria-labelledby="activity-title">
+        <header class="card-head"><h2 id="activity-title">Race activity</h2></header>
+        <ol class="feed-list" id="feed"><li class="empty">Waiting for the first event</li></ol>
+      </section>
+    </div>
+  </div>
+</main>
+<script>
+const byId = id => document.getElementById(id);
+const canvas = byId('road');
+const pen = canvas.getContext('2d');
+const controls = [...document.querySelectorAll('[data-kind]')];
+const clock = new Intl.DateTimeFormat(undefined, { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+const scoreDate = new Intl.DateTimeFormat(undefined, { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+const scoreNumber = new Intl.NumberFormat();
+const actions = {wait:'Hold',left:'Left',right:'Right',up:'Up',down:'Down',fire:'Fire'};
+let state = {};
+let posting = false;
+let request = null;
+let lost = false;
+let queueKey, feedKey;
+let scores = [];
+let scoreKey;
+let scorePage = 0;
+let editingPlayer = null;
+
+function editPlayer(run, button) {
+  if (editingPlayer) return;
+  editingPlayer = run.player;
+  const form = document.createElement('form');
+  form.className = 'player-edit';
+  const input = document.createElement('input');
+  input.setAttribute('aria-label', 'Name for Player ' + run.player);
+  input.placeholder = 'Player ' + run.player;
+  input.value = run.name || '';
+  const save = document.createElement('button');
+  save.textContent = 'Save';
+  const cancel = document.createElement('button');
+  cancel.type = 'button';
+  cancel.textContent = 'Cancel';
+  const feedback = document.createElement('p');
+  feedback.setAttribute('role', 'status');
+  form.append(input, save, cancel, feedback);
+  button.replaceWith(form);
+  input.focus();
+  input.select();
+
+  function close() {
+    editingPlayer = null;
+    scoreKey = null;
+    renderScores();
+    byId('scores').querySelector('[data-player="' + run.player + '"]')?.focus();
+  }
+  cancel.addEventListener('click', close);
+  form.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !cancel.disabled) {
+      event.preventDefault();
+      close();
+    }
+  });
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (save.disabled) return;
+    if ([...input.value.trim()].length > 24) {
+      feedback.textContent = 'Use up to 24 characters.';
+      return;
+    }
+    input.disabled = save.disabled = cancel.disabled = true;
+    try {
+      const response = await fetch('/leaderboard/players/' + run.player, {
+        method: 'PUT', headers: {'X-Road-Racer':'1'}, body: input.value,
+        signal: AbortSignal.timeout(3000),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      scores = scores.map(score => score.player === run.player ? { ...score, name: result.name } : score);
+      close();
+    } catch (error) {
+      feedback.textContent = error.name === 'TimeoutError' ? 'Could not reach the Jetson. Try again.' : error.message;
+      input.disabled = save.disabled = cancel.disabled = false;
+      input.focus();
+    }
+  });
+}
+
+function renderScores() {
+  if (editingPlayer) return;
+  const driver = byId('score-filter').value;
+  const matching = scores.filter(run => !driver || run.driver === driver);
+  const pages = Math.max(1, Math.ceil(matching.length / 10));
+  scorePage = Math.min(scorePage, pages - 1);
+  const first = scorePage * 10;
+  const visible = matching.slice(first, first + 10);
+  const key = JSON.stringify([driver, scorePage, pages, visible]);
+  if (key === scoreKey) return;
+  scoreKey = key;
+  const rows = visible.map((run, index) => {
+    const row = document.createElement('tr');
+    row.insertCell().textContent = first + index + 1;
+    const playerCell = row.insertCell();
+    if (run.player) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'player-name';
+      button.dataset.player = run.player;
+      button.textContent = run.name || 'Player ' + run.player;
+      button.addEventListener('click', () => editPlayer(run, button));
+      playerCell.append(button);
+      if (run.driver === 'Mixed') {
+        const mode = document.createElement('span');
+        mode.className = 'player-mode';
+        mode.textContent = '+ Bot';
+        playerCell.append(mode);
+      }
+    } else {
+      playerCell.textContent = 'Bot';
+    }
+    row.insertCell().textContent = scoreNumber.format(run.score);
+    row.insertCell().textContent = scoreDate.format(run.at);
+    return row;
+  });
+  if (!rows.length) {
+    const row = document.createElement('tr');
+    const cell = row.insertCell();
+    cell.className = 'empty-score';
+    cell.colSpan = 4;
+    cell.textContent = driver ? 'No finished runs for this driver yet.' : 'Finish a race to post the first score.';
+    rows.push(row);
+  }
+  byId('scores').replaceChildren(...rows);
+  byId('score-pages').hidden = pages === 1;
+  byId('score-prev').disabled = scorePage === 0;
+  byId('score-next').disabled = scorePage === pages - 1;
+  byId('score-page').textContent = 'Page ' + (scorePage + 1) + ' of ' + pages;
+}
+byId('score-filter').addEventListener('change', () => { scorePage = 0; renderScores(); });
+byId('score-prev').addEventListener('click', () => { if (!editingPlayer) { scorePage--; renderScores(); } });
+byId('score-next').addEventListener('click', () => { if (!editingPlayer) { scorePage++; renderScores(); } });
+
+const sprites = {
+  chicken: ['00000300','00003320','10003330','13333000','12333000','03330000','01010000','02020000'],
+  pedestrian: ['00333000','00323000','00030000','02333200','00333100','00330100','00110100','00220100'],
+  cone: ['00033000','00033000','00233200','00233200','03333330','03222330','13333331','11111111'],
+};
+function sprite(rows, palette, x, y) {
+  rows.forEach((row, dy) => [...row].forEach((ink, dx) => {
+    if (ink === '0') return;
+    pen.fillStyle = palette[+ink - 1];
+    pen.fillRect(x + dx, y + dy, 1, 1);
+  }));
+}
+
+const landscape = document.createElement('canvas');
+landscape.width = 190;
+landscape.height = 120;
+const terrain = landscape.getContext('2d');
+terrain.fillStyle = '#374d32';
+terrain.fillRect(0, 0, landscape.width, landscape.height);
+for (let i = 0; i < 287; i++) {
+  const x = (i * 71.13) % landscape.width;
+  const y = (i * 47.83) % landscape.height;
+  terrain.fillStyle = ['#425b38', '#536343', '#2d412b', '#30462b'][i % 4];
+  terrain.fillRect(x, y, 0.3 + (i % 7) * 0.37, 0.4 + (i % 3) * 0.37);
+}
+const grass = pen.createPattern(landscape, 'repeat');
+
+function oval(x, y, rx, ry, color) {
+  pen.fillStyle = color;
+  pen.beginPath();
+  pen.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+  pen.fill();
+}
+
+function drawCar(x, y, crashed) {
+  pen.save();
+  pen.translate(x + 4.5, y);
+  oval(1, 9, 6.4, 9.6, '#11171291');
+  pen.fillStyle = '#151b19';
+  for (const ax of [-5, 3.5]) {
+    pen.fillRect(ax, 2.4, 1.5, 3.5);
+    pen.fillRect(ax, 11.1, 1.5, 3.5);
+  }
+  const paint = pen.createLinearGradient(-4.5, 0, 4.5, 0);
+  paint.addColorStop(0, crashed ? '#7a4428' : '#8a2f2b');
+  paint.addColorStop(.45, crashed ? '#f4ab59' : '#d25748');
+  paint.addColorStop(1, crashed ? '#a65d33' : '#ad3d34');
+  pen.fillStyle = paint;
+  pen.beginPath();
+  pen.roundRect(-4.4, 0, 8.8, 16, [2, 2, 1.7, 1.7]);
+  pen.fill();
+  pen.fillStyle = '#27343a';
+  pen.beginPath();
+  pen.moveTo(-3.3, 4.6);
+  pen.lineTo(3.3, 4.6);
+  pen.lineTo(2.6, 7.4);
+  pen.lineTo(-2.6, 7.4);
+  pen.closePath();
+  pen.fill();
+  pen.fillRect(-2.6, 10.3, 5.2, 2.5);
+  pen.fillStyle = '#61797f';
+  pen.fillRect(-2.5, 4.8, 4.9, .55);
+  pen.fillStyle = '#fff1b2';
+  pen.fillRect(-3.6, 1.1, 1.6, .75);
+  pen.fillRect(2, 1.1, 1.6, .75);
+  pen.fillStyle = '#ffb38c';
+  pen.fillRect(-3.7, 14.1, 1.7, .85);
+  pen.fillRect(2, 14.1, 1.7, .85);
+  pen.restore();
+}
+
+function draw() {
+  const profile = state.roadProfile?.length ? state.roadProfile : [
+    {y:0,left:66}, {y:37,left:70}, {y:85,left:state.road || 76}, {y:143,left:72}
+  ];
+  const leftEdges = [];
+  let sample = 0;
+  for (let y = 0; y <= 144; y++) {
+    while (sample + 1 < profile.length && y >= profile[sample + 1].y) sample++;
+    const a = profile[sample];
+    const b = profile[sample + 1];
+    const t = b && b.y > a.y ? Math.max(0, (y - a.y) / (b.y - a.y)) : 0;
+    leftEdges.push(a.left - 8 + (b ? (b.left - a.left) * t : 0));
+  }
+  const scroll = state.frame || 0;
+  const drift = (scroll % 60) * 2;
+  pen.setTransform(canvas.width / 160, 0, 0, canvas.height / 144, 0, 0);
+  pen.fillStyle = '#374d32';
+  pen.fillRect(0, 0, 160, 144);
+  pen.save();
+  pen.translate(0, drift);
+  pen.fillStyle = grass;
+  pen.fillRect(0, -drift, 160, 144);
+  pen.restore();
+
+  function ribbon(offset, width, color, first = 0, last = 144) {
+    pen.fillStyle = color;
+    pen.beginPath();
+    pen.moveTo(leftEdges[first] + offset, first);
+    for (let y = first + 1; y <= last; y++) pen.lineTo(leftEdges[y] + offset, y);
+    for (let y = last; y >= first; y--) pen.lineTo(leftEdges[y] + offset + width, y);
+    pen.closePath();
+    pen.fill();
+  }
+
+  ribbon(-6, 44, '#263723');
+  ribbon(-4, 40, '#7d7455');
+  ribbon(0, 32, '#3e423d');
+  for (let i = 0; i < 143; i++) {
+    const y = (i * 17 + scroll * 2) % 144;
+    const x = leftEdges[y] + (i * 43 % 38) - 3;
+    pen.fillStyle = i % 2 ? '#7c7b6a5c' : '#22262070';
+    pen.fillRect(x, y, .5 + (i % 3) * .35, .36);
+  }
+  ribbon(0, .9, '#dcdcc3');
+  ribbon(31.1, .9, '#dcdcc3');
+  for (let top = (scroll * 2 % 24) - 24; top < 144; top += 24) {
+    if (top + 10 > 0) ribbon(15.35, 1.3, '#f2c35f', Math.max(top, 0), Math.min(top + 10, 144));
+  }
+  for (let i = 0; i < 23; i++) {
+    const x = i * 43 % 160;
+    const y = (i * 19 + (scroll * 2) % 144) % 144;
+    if (x > leftEdges[y] - 11 && x < leftEdges[y] + 43) continue;
+    oval(x + 2, y + 1, 3.5, 1.6, '#21302292');
+    oval(x, y, 2.5, 2.15, '#2b412b');
+    oval(x - .5, y - .5, 1.45, 1.1, '#5c7948');
+  }
+
+  for (const hazard of state.obstacles || []) {
+    const x = hazard.left - 8;
+    oval(x + 4.5, hazard.y + 7, 4.2, 1.65, '#1c2119a6');
+    if (hazard.kind >= 5) sprite(sprites.cone, ['#5c371b','#ffefce','#ff9f63'], x, hazard.y);
+    else if (hazard.kind >= 3) sprite(sprites.pedestrian, ['#6352a1','#fff1ce','#bfb2ff'], x, hazard.y);
+    else sprite(sprites.chicken, ['#af7242','#ffb765','#ffdf9d'], x, hazard.y);
+  }
+  if (state.rocket) {
+    const {x, y} = state.rocket;
+    oval(x - 8, y + 3, 2.1, 5, '#ff8b3b70');
+    oval(x - 8, y, .95, 3.1, '#ffeeae');
+  }
+  if (state.splatter) {
+    const {x, y, frames, kind} = state.splatter;
+    const color = kind === 2 ? '#fff0d3' : kind === 3 ? '#ffd24e' : '#ff726b';
+    const spread = frames > 17 ? 0 : 2;
+    for (const [dx, dy] of [[0,2],[6,0],[7,5],[1,7],[5,7]]) {
+      oval(x - 8 + dx + (dx < 4 ? -spread : spread), y + dy, .8, .7, color);
+    }
+  }
+  if (state.car && state.playing) drawCar(state.car.x, state.car.y + 5, state.crashed);
+}
+
+function showLists() {
+  const queue = state.queue || [];
+  const events = state.activity || [];
+  const nextQueueKey = JSON.stringify(queue);
+  if (queueKey !== nextQueueKey) {
+    queueKey = nextQueueKey;
+    byId('queue-meter').value = queue.length;
+    byId('queue-count').textContent = queue.length + ' / 6';
+    const entries = (queue.length ? queue : ['No hazards queued']).map((label, index) => {
+      const li = document.createElement('li');
+      if (!queue.length) li.className = 'empty';
+      li.textContent = queue.length && index === 0 ? 'Next · ' + label : label;
+      return li;
+    });
+    byId('queue').replaceChildren(...entries);
+  }
+  const nextFeedKey = JSON.stringify(events);
+  if (feedKey !== nextFeedKey) {
+    feedKey = nextFeedKey;
+    const entries = events.slice(0, 5).map(event => {
+      const li = document.createElement('li');
+      const label = document.createElement('span');
+      const time = document.createElement('time');
+      li.dataset.type = event.type;
+      label.textContent = event.type === 'placed' ? 'Placed · ' + event.label : event.label;
+      time.dateTime = new Date(event.at).toISOString();
+      time.textContent = clock.format(event.at);
+      li.append(label, time);
+      return li;
+    });
+    if (!entries.length) {
+      const li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = 'Waiting for the first event';
+      entries.push(li);
+    }
+    byId('feed').replaceChildren(...entries);
+  }
+}
+
+function render() {
+  const connection = byId('connection');
+  const mode = state.manual ? 'You' : 'Bot';
+  const status = lost ? 'Jetson offline' : !state.connected ? 'Waiting for Chromatic'
+    : state.paused ? 'Paused' : !state.playing ? 'Ready' : !state.manual && state.modelError ? 'Model unavailable' : 'Live';
+  if (connection.textContent !== status) connection.textContent = status;
+  connection.dataset.tone = !state.connected ? 'offline' : state.paused || (!state.manual && state.modelError) ? 'hold' : 'live';
+  byId('driver').textContent = state.connected ? mode : '—';
+  byId('decision').textContent = state.paused ? 'Paused' : !state.playing ? '—'
+    : state.crashed ? 'Crash' : state.manual ? 'Manual' : actions[state.decision] || '—';
+  for (const metric of ['cleared','hits','destroyed']) byId(metric).textContent = state[metric] ?? '0';
+
+  byId('track-note').hidden = Boolean(state.playing && !state.paused);
+  byId('track-status').textContent = lost ? 'Jetson offline' : !state.connected ? 'Waiting for Chromatic'
+    : state.paused ? 'Race paused' : 'Ready to race';
+  byId('track-help').textContent = lost ? 'Reconnecting to the control panel.'
+    : !state.connected ? 'Launch Road Racer Versus on the handheld.'
+    : state.paused ? mode + ' drives next. Press START on the Chromatic.' : 'Press START on the Chromatic.';
+  updateControls();
+  showLists();
+  draw();
+}
+
+function updateControls() {
+  const disabled = posting || !state.playing || state.paused || (state.queue?.length ?? 0) >= 6;
+  for (const button of controls) button.disabled = disabled;
+}
+
+async function refresh() {
+  if (request) return request;
+  request = (async () => {
+    try {
+      const response = await fetch('/state', {signal:AbortSignal.timeout(1600)});
+      if (!response.ok) throw new Error('State unavailable');
+      state = await response.json();
+      scores = state.leaderboard || [];
+      renderScores();
+      lost = false;
+    } catch {
+      state = {};
+      lost = true;
+    }
+    render();
+  })();
+  try { await request; } finally { request = null; }
+}
+
+async function place(button) {
+  if (!button || button.disabled || posting) return;
+  posting = true;
+  updateControls();
+  const message = byId('message');
+  try {
+    const response = await fetch('/hazards/' + button.dataset.kind, {
+      method:'POST',headers:{'X-Road-Racer':'1'},signal:AbortSignal.timeout(2500),
+    });
+    const result = await response.json();
+    message.textContent = response.ok ? 'Sent · ' + result.queued : result.error || 'Could not place hazard';
+    message.dataset.error = String(!response.ok);
+  } catch {
+    message.textContent = 'Could not reach the Jetson';
+    message.dataset.error = 'true';
+  } finally {
+    await refresh();
+    posting = false;
+    updateControls();
+  }
+}
+
+for (const button of controls) button.addEventListener('click', () => place(button));
+window.addEventListener('keydown', event => {
+  if (event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
+      event.target.closest?.('input,textarea,select,[contenteditable]')) return;
+  const button = controls.find(control => control.dataset.kind === event.key);
+  if (button && !button.disabled) { event.preventDefault(); place(button); }
+});
+async function poll() {
+  await refresh();
+  window.setTimeout(poll, document.hidden ? 900 : 110);
+}
+draw();
+poll();
+</script>
+</body>
+</html>
