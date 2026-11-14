@@ -26,10 +26,11 @@ function unavailable(error) {
   return Response.json({ error: 'Leaderboard is temporarily unavailable.' }, { status: 503, headers: NO_CACHE });
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
     const { entries } = await readBoard();
-    return Response.json({ entries: publicEntries(entries) }, { headers: READ_CACHE });
+    const fresh = request && new URL(request.url).searchParams.has('fresh');
+    return Response.json({ entries: publicEntries(entries) }, { headers: fresh ? NO_CACHE : READ_CACHE });
   } catch (error) {
     return unavailable(error);
   }

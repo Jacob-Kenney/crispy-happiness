@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createEmulator, loadCartridge } from './emulator';
 import Leaderboard from './leaderboard';
+import { savedHighScore } from './cartridge-score';
 
 const keyboard = new Map(Object.entries({
   ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
@@ -21,6 +22,7 @@ export default function Player() {
   const [fullscreenAvailable, setFullscreenAvailable] = useState(false);
 
   useEffect(() => {
+    setHighScore(savedHighScore());
     function keyDown(event) {
       const button = keyboard.get(event.code);
       if (!session.current?.emulator || !button || event.altKey || event.ctrlKey || event.metaKey) return;

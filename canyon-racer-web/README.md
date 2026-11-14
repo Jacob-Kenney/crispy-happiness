@@ -23,6 +23,6 @@ The WebAssembly build of [binjgb](https://github.com/binji/binjgb/tree/f7af6eab3
 
 Connect a private Vercel Blob store to the project. The SDK uses the connected store’s `BLOB_STORE_ID` and Vercel OIDC credentials. For local development, set `BLOB_READ_WRITE_TOKEN` for that private store in `.env.local`.
 
-The leaderboard serves the top 20 from a single JSON blob. The browser loads it once and can refresh it on demand. Public score responses are cached by Vercel for 30 seconds with stale revalidation. Players submit their cartridge high score under a display name. Each submission reads one blob and writes it only if the ranking changes. Conditional writes prevent simultaneous submissions from dropping scores. The submission response includes the updated leaderboard so the browser skips another read.
+The leaderboard serves the top 20 from a single JSON blob. Initial page loads use Vercel's CDN cache. The Refresh button fetches the latest ranking from storage. Players submit their first cartridge high score under a display name, and future personal bests post automatically under that name. Each submission reads one blob and writes it only if the ranking changes. Conditional writes prevent simultaneous submissions from dropping scores. The submission response includes the updated leaderboard so the browser skips another read.
 
 The board keeps one best score per browser profile. Scores come from the browser and are suitable for casual competition. The server checks the score format and bounds.

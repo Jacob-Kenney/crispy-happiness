@@ -1,8 +1,7 @@
-import { cartridgeHighScore } from './cartridge-score';
+import { cartridgeHighScore, SAVE_KEY } from './cartridge-score';
 
 const CORE_URL = '/emulator/binjgb.js';
 const ROM_URL = '/rom/canyon-racer.gb';
-const SAVE_KEY = 'canyon-racer.cartridge-ram';
 const AUDIO_FRAMES = 2048;
 const TICKS_PER_SECOND = 4_194_304;
 const FRAME_READY = 1;
