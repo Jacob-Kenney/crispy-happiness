@@ -1,0 +1,26 @@
+{
+  "selection": "Top 3 of 10 seeds ranked by v1.5 best score; selected after evaluation, not an unbiased benchmark",
+  "runs": [
+    {
+      "seed": 2,
+      "reference": 250,
+      "v1.5": 380,
+      "delta": 130
+    },
+    {
+      "seed": 0,
+      "reference": 230,
+      "v1.5": 290,
+      "delta": 60
+    },
+    {
+      "seed": 5,
+      "reference": 20,
+      "v1.5": 190,
+      "delta": 170
+    }
+  ],
+  "selected_mean": 286.6666666666667,
+  "all_10_mean": 170,
+  "all_10_median": 145.0
+}

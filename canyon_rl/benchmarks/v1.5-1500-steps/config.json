@@ -1,0 +1,22 @@
+{
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "step_budget": 1500,
+  "frame_skip": 4,
+  "score": "best raw in-game score",
+  "backend": "canonical MCP EmulatorBackend, direct calls",
+  "reference": "upstream HeuristicPolicy(th=30, hold=2)",
+  "replay": "fresh EmulatorBackend per trace; verify score, steps, frames, final lives and score",
+  "game_revision": "ce720cb3bf638839eeacf9526aa29578a50bbd78",
+  "seed_semantics": "reset(seed) as in MCP: seed initializes Gym RNG, which selects ROM game_seed"
+}

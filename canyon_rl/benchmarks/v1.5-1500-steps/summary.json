@@ -1,0 +1,87 @@
+{
+  "v1.5": {
+    "runs": 10,
+    "mean": 170,
+    "median": 145.0,
+    "min": 60,
+    "max": 380,
+    "alive_at_budget": 10,
+    "replay_verified": 10
+  },
+  "reference": {
+    "runs": 10,
+    "mean": 146,
+    "median": 195.0,
+    "min": 20,
+    "max": 250,
+    "alive_at_budget": 7,
+    "replay_verified": 10
+  },
+  "paired": [
+    {
+      "seed": 0,
+      "reference": 230,
+      "v1.5": 290,
+      "delta": 60
+    },
+    {
+      "seed": 1,
+      "reference": 20,
+      "v1.5": 110,
+      "delta": 90
+    },
+    {
+      "seed": 2,
+      "reference": 250,
+      "v1.5": 380,
+      "delta": 130
+    },
+    {
+      "seed": 3,
+      "reference": 220,
+      "v1.5": 160,
+      "delta": -60
+    },
+    {
+      "seed": 4,
+      "reference": 190,
+      "v1.5": 180,
+      "delta": -10
+    },
+    {
+      "seed": 5,
+      "reference": 20,
+      "v1.5": 190,
+      "delta": 170
+    },
+    {
+      "seed": 6,
+      "reference": 80,
+      "v1.5": 90,
+      "delta": 10
+    },
+    {
+      "seed": 7,
+      "reference": 200,
+      "v1.5": 130,
+      "delta": -70
+    },
+    {
+      "seed": 8,
+      "reference": 230,
+      "v1.5": 110,
+      "delta": -120
+    },
+    {
+      "seed": 9,
+      "reference": 20,
+      "v1.5": 60,
+      "delta": 40
+    }
+  ],
+  "wins_ties_losses": [
+    6,
+    0,
+    4
+  ]
+}

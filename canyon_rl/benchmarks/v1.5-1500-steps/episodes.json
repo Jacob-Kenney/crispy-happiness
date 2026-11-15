@@ -1,0 +1,378 @@
+[
+  {
+    "seed": 0,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 230,
+    "final_score": 120,
+    "initial_lives": 10,
+    "final_lives": 9,
+    "game_over": false,
+    "actions": {
+      "wait": 1391,
+      "a": 109
+    },
+    "wall_seconds": 1.574,
+    "policy": "reference",
+    "replay_verified": true
+  },
+  {
+    "seed": 0,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 290,
+    "final_score": 50,
+    "initial_lives": 10,
+    "final_lives": 7,
+    "game_over": false,
+    "actions": {
+      "right": 626,
+      "up": 54,
+      "left": 578,
+      "a": 90,
+      "wait": 152
+    },
+    "wall_seconds": 31.703,
+    "policy": "v1.5",
+    "replay_verified": true
+  },
+  {
+    "seed": 1,
+    "steps": 1439,
+    "frames": 5756,
+    "best_score": 20,
+    "final_score": 20,
+    "initial_lives": 10,
+    "final_lives": 0,
+    "game_over": true,
+    "actions": {
+      "wait": 1397,
+      "a": 42
+    },
+    "wall_seconds": 1.155,
+    "policy": "reference",
+    "replay_verified": true
+  },
+  {
+    "seed": 1,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 110,
+    "final_score": 20,
+    "initial_lives": 10,
+    "final_lives": 5,
+    "game_over": false,
+    "actions": {
+      "right": 676,
+      "up": 106,
+      "left": 480,
+      "a": 65,
+      "wait": 166,
+      "down": 7
+    },
+    "wall_seconds": 31.408,
+    "policy": "v1.5",
+    "replay_verified": true
+  },
+  {
+    "seed": 2,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 250,
+    "final_score": 70,
+    "initial_lives": 10,
+    "final_lives": 7,
+    "game_over": false,
+    "actions": {
+      "wait": 1404,
+      "a": 96
+    },
+    "wall_seconds": 1.411,
+    "policy": "reference",
+    "replay_verified": true
+  },
+  {
+    "seed": 2,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 380,
+    "final_score": 300,
+    "initial_lives": 10,
+    "final_lives": 8,
+    "game_over": false,
+    "actions": {
+      "right": 620,
+      "up": 71,
+      "left": 545,
+      "a": 68,
+      "wait": 189,
+      "down": 7
+    },
+    "wall_seconds": 33.604,
+    "policy": "v1.5",
+    "replay_verified": true
+  },
+  {
+    "seed": 3,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 220,
+    "final_score": 10,
+    "initial_lives": 10,
+    "final_lives": 9,
+    "game_over": false,
+    "actions": {
+      "wait": 1400,
+      "a": 100
+    },
+    "wall_seconds": 1.351,
+    "policy": "reference",
+    "replay_verified": true
+  },
+  {
+    "seed": 3,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 160,
+    "final_score": 150,
+    "initial_lives": 10,
+    "final_lives": 7,
+    "game_over": false,
+    "actions": {
+      "right": 589,
+      "up": 192,
+      "left": 436,
+      "a": 94,
+      "wait": 187,
+      "down": 2
+    },
+    "wall_seconds": 33.65,
+    "policy": "v1.5",
+    "replay_verified": true
+  },
+  {
+    "seed": 4,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 190,
+    "final_score": 160,
+    "initial_lives": 10,
+    "final_lives": 7,
+    "game_over": false,
+    "actions": {
+      "wait": 1398,
+      "a": 102
+    },
+    "wall_seconds": 1.361,
+    "policy": "reference",
+    "replay_verified": true
+  },
+  {
+    "seed": 4,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 180,
+    "final_score": 170,
+    "initial_lives": 10,
+    "final_lives": 7,
+    "game_over": false,
+    "actions": {
+      "right": 533,
+      "up": 148,
+      "left": 437,
+      "a": 110,
+      "wait": 272
+    },
+    "wall_seconds": 34.94,
+    "policy": "v1.5",
+    "replay_verified": true
+  },
+  {
+    "seed": 5,
+    "steps": 1439,
+    "frames": 5756,
+    "best_score": 20,
+    "final_score": 20,
+    "initial_lives": 10,
+    "final_lives": 0,
+    "game_over": true,
+    "actions": {
+      "wait": 1417,
+      "a": 22
+    },
+    "wall_seconds": 1.24,
+    "policy": "reference",
+    "replay_verified": true
+  },
+  {
+    "seed": 5,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 190,
+    "final_score": 40,
+    "initial_lives": 10,
+    "final_lives": 5,
+    "game_over": false,
+    "actions": {
+      "right": 702,
+      "up": 109,
+      "left": 451,
+      "a": 77,
+      "wait": 160,
+      "down": 1
+    },
+    "wall_seconds": 39.884,
+    "policy": "v1.5",
+    "replay_verified": true
+  },
+  {
+    "seed": 6,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 80,
+    "final_score": 60,
+    "initial_lives": 10,
+    "final_lives": 4,
+    "game_over": false,
+    "actions": {
+      "wait": 1424,
+      "a": 76
+    },
+    "wall_seconds": 1.261,
+    "policy": "reference",
+    "replay_verified": true
+  },
+  {
+    "seed": 6,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 90,
+    "final_score": 0,
+    "initial_lives": 10,
+    "final_lives": 2,
+    "game_over": false,
+    "actions": {
+      "right": 710,
+      "up": 117,
+      "left": 532,
+      "a": 44,
+      "wait": 94,
+      "down": 3
+    },
+    "wall_seconds": 38.839,
+    "policy": "v1.5",
+    "replay_verified": true
+  },
+  {
+    "seed": 7,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 200,
+    "final_score": 0,
+    "initial_lives": 10,
+    "final_lives": 6,
+    "game_over": false,
+    "actions": {
+      "wait": 1418,
+      "a": 82
+    },
+    "wall_seconds": 1.222,
+    "policy": "reference",
+    "replay_verified": true
+  },
+  {
+    "seed": 7,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 130,
+    "final_score": 120,
+    "initial_lives": 10,
+    "final_lives": 6,
+    "game_over": false,
+    "actions": {
+      "right": 553,
+      "up": 254,
+      "left": 377,
+      "a": 109,
+      "wait": 207
+    },
+    "wall_seconds": 43.07,
+    "policy": "v1.5",
+    "replay_verified": true
+  },
+  {
+    "seed": 8,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 230,
+    "final_score": 130,
+    "initial_lives": 10,
+    "final_lives": 8,
+    "game_over": false,
+    "actions": {
+      "wait": 1408,
+      "a": 92
+    },
+    "wall_seconds": 1.229,
+    "policy": "reference",
+    "replay_verified": true
+  },
+  {
+    "seed": 8,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 110,
+    "final_score": 110,
+    "initial_lives": 10,
+    "final_lives": 7,
+    "game_over": false,
+    "actions": {
+      "right": 609,
+      "up": 183,
+      "left": 484,
+      "a": 71,
+      "down": 5,
+      "wait": 148
+    },
+    "wall_seconds": 47.281,
+    "policy": "v1.5",
+    "replay_verified": true
+  },
+  {
+    "seed": 9,
+    "steps": 1439,
+    "frames": 5756,
+    "best_score": 20,
+    "final_score": 20,
+    "initial_lives": 10,
+    "final_lives": 0,
+    "game_over": true,
+    "actions": {
+      "wait": 1417,
+      "a": 22
+    },
+    "wall_seconds": 1.141,
+    "policy": "reference",
+    "replay_verified": true
+  },
+  {
+    "seed": 9,
+    "steps": 1500,
+    "frames": 6000,
+    "best_score": 60,
+    "final_score": 20,
+    "initial_lives": 10,
+    "final_lives": 3,
+    "game_over": false,
+    "actions": {
+      "right": 787,
+      "up": 102,
+      "left": 410,
+      "a": 68,
+      "wait": 133
+    },
+    "wall_seconds": 43.903,
+    "policy": "v1.5",
+    "replay_verified": true
+  }
+]
