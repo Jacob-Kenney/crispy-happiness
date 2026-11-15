@@ -1,0 +1,11 @@
+{
+  "sha256": {
+    "play_mcp.py": "35ae9516ca7b3ce8368c4e6e681ef8a6abea30efdd781b111ae1fa1c1256049e",
+    "v15_action_policy.json": "f5bf4caf3fd2a3df17d3f67f6828d16651b08b71fa028838d3070fee2544a3c2",
+    "compare_mcp_policies.py": "67c33e4c6c87aa7f36272e533292b8c851cf6609d8110355ccf5d0c07529f097",
+    "canyon-racer-lfm2-230m-v1.5-Q4_K_M.gguf": "7a7da38fba5fc9c4082484a11cb0bcd3690361dca097f81f3c1405b2a0707b1b"
+  },
+  "game_commit": "ce720cb3bf638839eeacf9526aa29578a50bbd78",
+  "llama_cpp_version": "version: 0.7.0-dev (build 12136, commit 6447906bf)\nbuilt with AppleClang 21.0.0.21000401 for Darwin arm64",
+  "model_repository_revision": "986f870d2d858e34f2d431ceeec5bf104f9e1bff"
+}
